@@ -1,14 +1,11 @@
 ---
 title: Hello Markdown!
+first: 2222222222222222222222222222222222222222222222
 layout: default
 author:
   name: Aliece TT
   url: http://aliecett.wicp.net
 ---
-
-<p>11111111111111111111111111111111111111111111111111111111111111111111</p>
-
-<p>2222222222222222222222222222222222222222222222222222</p>
 
 I'm excited to get this blog thingie started. I'll be collecting a few of the tidbits that I've learned over time here. And migrating my little bit of content on over here.
 

@@ -38,7 +38,7 @@ body {
 
 #logo {
     position:absolute;
-    background: url('think.jpg') transparent no-repeat top left;
+    background: url('/think.jpg') transparent no-repeat top left;
     width:100px;
     height:100px;
     top: 60px;
@@ -50,7 +50,7 @@ body {
     font-size: 13px;
     line-height: 18px;
     color: #333;
-    background: url('back.png');
+    background: url('/back.png');
 }
 
 .hero-unit p {
