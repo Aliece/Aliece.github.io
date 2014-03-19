@@ -1,5 +1,6 @@
-/_site
 /nbproject
 *.DS_Store
 /_deployment
+_site/*
+
 
