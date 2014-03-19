@@ -1,8 +1,8 @@
 ---
-title: Hello World!
+title: Hello Markdown!
 layout: default
 author:
-  name: Robert Birnie
+  name: Aliece TT
   url: http://aliecett.wicp.net
 ---
 
