@@ -1,0 +1,6 @@
+[submodule "_pluginsonly-first-pjekyll-only_first_p"]
+	path = _pluginsonly-first-pjekyll-only_first_p
+	url = https://github.com/sebcioz/jekyll-only_first_p.git
+[submodule "_pluginssitemap-generatorjekyll-plugins"]
+	path = _pluginssitemap-generatorjekyll-plugins
+	url = https://github.com/kinnetica/jekyll-plugins.git
