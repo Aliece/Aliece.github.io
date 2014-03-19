@@ -29,7 +29,7 @@ blockquote {
 body {
     margin-bottom: 60px;
     padding-top:60px;
-    background-image: url('/assets/images/background.png');
+    background-image: url('/background.png');
 }
 
 .container {
@@ -50,7 +50,7 @@ body {
     font-size: 13px;
     line-height: 18px;
     color: #333;
-    background: url('/back.png');
+    background: url('/assets/images/back.png');
 }
 
 .hero-unit p {
