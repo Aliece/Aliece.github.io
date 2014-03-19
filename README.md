@@ -1,6 +1,5 @@
-uberobert.com
+aliecett.wicp.net
 =============
 
-Jekyll Source for my Blog! Huzzah! 
 
-[uber robert](http://uberobert.com)
+[Aliece TT](http://aliecett.wicp.net/)

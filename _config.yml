@@ -2,7 +2,7 @@
 exclude: ['nbproject', 'README.md', 'manifest.yml', 'rakefile.rb','s3_website.yml']
 permalink:   /:title
 url:         http://aliecett.wicp.net/
-
+production_url : http://Aliece.github.io
 safe:        false
 
 future:      false
@@ -10,8 +10,8 @@ pygments:    true
 markdown:    rdiscount
 
 # Site
-uberobert:
-    title: Uberobert
+aliece:
+    title: aliece
 
 # Only First P Plugin
 only_first_p:

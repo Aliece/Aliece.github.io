@@ -11,7 +11,7 @@
   <id>{{ site.url }}</id>
   <author>
     <name>Aliece</name>
-    <email>robert@uberobert.com</email>
+    <email>alieceyy@gmail.com</email>
   </author>
   {% for post in site.posts limit: 10 %}
   <entry>
