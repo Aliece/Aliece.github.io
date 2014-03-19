@@ -51,6 +51,7 @@ body {
     line-height: 18px;
     color: #333;
     background: url('/assets/images/back.png');
+    background-size: cover;
 }
 
 .hero-unit p {
