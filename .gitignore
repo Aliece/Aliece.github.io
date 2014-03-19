@@ -1,6 +1,5 @@
 /_site
 /nbproject
 *.DS_Store
-/update.sh
 /_deployment
-s3_website.yml
+

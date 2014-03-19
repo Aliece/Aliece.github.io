@@ -1,10 +1,14 @@
 ---
 layout: default
-title: Bio
+title: About
 ---
 
-<p>I'm an IT Professional, Systems Engineer and budding entrepreneur. I currently work for <a href="http://www.threatmetrix.com">ThreatMetrix</a> and privously served stints at <a href="http://us.etrade.com">E*Trade Financial</a> and <a href="http://www.cardiodx.com">CardioDx</a>. I love automating things and dream of the day when systems are smart enough to never need to login to a Linux box.</p>
+I'm an IT Professional, Systems Engineer and budding entrepreneur. I currently work for .
 
-<p>I'm also a bookworm, traveler, scuba diver, sailor, aquarist, horticulturist, runner, anime watcher, foodie, husband, and father. If only there was more time in the world... If you really want to know more about me then check out my <a href="http://about.me/robert.birnie">about.me</a> for a list of other places I commonly lurk.</p>
+平淡一直是我生活的全部，身为一个码农，我对自己很不满意，现在的年轻人太浮躁了， 不加班，不写代码，成天想着跳槽涨工资，没有努力，何来成果。没有付出，何谈收获！沉下心来，好好学习吧！
 
-<p>If you have any thoughts while reading this site I'd love to hear them. You can contact me on <a href="http://twitter.com/Robert_Birnie">Twitter</a>, or via <a href="mailto:rbirnie@gmail.com">email</a>. Thanks for reading!</p>
+<p><img src="/assets/images/about.png"></p>
+
+专注->发散
+
+If you have any thoughts while reading this site I'd love to hear them. You can contact me on <a href="https://github.com/Aliece">Github</a>, or via <a href="alieceyy@gmail.com">email</a>. Thanks for reading!

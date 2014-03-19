@@ -1,7 +1,7 @@
 # Jekyll
-exclude: ['nbproject', 'README.md', 'manifest.yml', 'rakefile.rb', 'Gemfile', 'Gemfile.lock', 'update.sh', 'localupdate.sh','s3_website.yml']
+exclude: ['nbproject', 'README.md', 'manifest.yml', 'rakefile.rb','s3_website.yml']
 permalink:   /:title
-url:         http://www.uberobert.com
+url:         http://aliecett.wicp.net/
 
 safe:        false
 

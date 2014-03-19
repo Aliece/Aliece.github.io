@@ -4,13 +4,13 @@
 
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
-  <title>Uberobert</title>
+  <title>Aliece</title>
   <link href="{{ site.url }}{{ page.url }}" rel="self" />
   <link href="{{ page.url }}" />
   <updated>{{ site.time | date_to_xmlschema }}</updated>
   <id>{{ site.url }}</id>
   <author>
-    <name>Robert Birnie</name>
+    <name>Aliece</name>
     <email>robert@uberobert.com</email>
   </author>
   {% for post in site.posts limit: 10 %}
