@@ -58,7 +58,7 @@ body {
     font-size: 18px;
     font-weight: 200;
     line-height: 27px;
-    color: inherit;
+    color: lightcoral;
 }
 
 .hero-unit h1 {
@@ -67,11 +67,11 @@ body {
 }
 
 .hero-unit h1 a {
-    color:#555;
+    color:black;
 }
 
 .hero-unit h1 a:hover {
-    color:#333;
+    color:#F5F50B;
     text-decoration: none;
 }
 

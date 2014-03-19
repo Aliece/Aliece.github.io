@@ -37,6 +37,6 @@ sd
 
 6.Bootstrap按钮生成器 http://charliepark.org/bootstrap_buttons/
 
-7.前后端结合讨论  http://stackoverflow.com/questions/9525170/backend-technology-for-front-end-technologies-like-twitter-bootstrap
+7.前后端结合讨论  http://stackoverflow.com/questions/9525170/backend-technology-for-front-end-technologies-like-twitter-bootstrap/
 
-8. Bootstrap英文教程  http://webdesign.tutsplus.com/tutorials/htmlcss-tutorials/stepping-out-with-bootstrap-from-twitter/
+8.Bootstrap英文教程  http://webdesign.tutsplus.com/tutorials/htmlcss-tutorials/stepping-out-with-bootstrap-from-twitter/
