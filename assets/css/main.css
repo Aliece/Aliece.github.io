@@ -38,7 +38,7 @@ body {
 
 #logo {
     position:absolute;
-    background: url('/assets/images/think.jpg') transparent no-repeat top left;
+    background: url('/assets/images/logo.jpg') transparent no-repeat top left;
     width:100px;
     height:100px;
     top: 60px;
