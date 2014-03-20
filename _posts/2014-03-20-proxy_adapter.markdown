@@ -1,6 +1,6 @@
 ---
 title: Proxy Adapter!
-first: 
+first: 很早以前就听说Spring的AOP，IOC，但是真正用到的也只有IOC而已，最近研究了一些Java的反射机制，所以打算自己弄一个类似于AOP的拦截器框架。
 layout: default
 author:
   name: Aliece TT
@@ -428,7 +428,7 @@ public class ProxyTest {
 
 首先看一张图：
 
-<img src="/assets/images/DesignPatterns/adapter.jpg"></img>
+<img src="/assets/images/DesignPatterns/adapter.png"></img>
 
 从图中我们可以看出来：
 
