@@ -194,6 +194,47 @@ author:
 
 玩过前端的人应该都比较了解MVC，OOP等框架模式，而Ko确实MVVM框架，当然如果你要去深究，类似的JS框架还是一大堆的，毕竟大牛越来越多，具体的教程这里不多说，直接上官网吧[http://knockoutjs.com/](http://knockoutjs.com/)
 
+其使用方法跟其它JS“框架”（暂且说他是框架吧）没啥区别，首先我们先下载[Knockout.js](http://knockoutjs.com/downloads/knockout-3.1.0.js),然后在页面中引用：
+
+{% highlight ruby %}
+
+<script type='text/javascript' src='knockout-3.1.0.js'></script>
+
+{% endhighlight %}
+
+下面我们来讲解一个简单的使用例子，看看它是怎么来bind数据的：
+
+{% highlight ruby %}
+
+<div class='liveExample'>   
+    <p>First name: <input data-bind='value: firstName' /></p> 
+    <p>Last name: <input data-bind='value: lastName' /></p> 
+    <h2>Hello, <span data-bind='text: fullName'> </span>!</h2>  
+</div>
+
+<script type='text/javascript'>
+// Here's my data model
+var ViewModel = function(first, last) {
+    this.firstName = ko.observable(first);
+    this.lastName = ko.observable(last);
+ 
+    this.fullName = ko.computed(function() {
+        // Knockout tracks dependencies automatically. It knows that fullName depends on firstName and lastName, because these get called when evaluating fullName.
+        return this.firstName() + " " + this.lastName();
+    }, this);
+};
+ 
+ko.applyBindings(new ViewModel("Planet", "Earth")); // This makes Knockout get to work
+</script>
+
+{% endhighlight %}
+
+怎么样，效果很不错吧，官网还给出了很多绑定的例子，比如事件绑定，权限的控制等等，如果没有实现的同学官网还给出了在线编译器[jsfiddle](http://jsfiddle.net/rniemeyer/LkqTU/)，我们可以在这上面动态的改变代码然后运行。
+
+
+生平之中第一次写博客，很不习惯啊，虽然都是一些基础的东西，希望以后能够把自己学到的东西记下了，就当做一个记事本了吧！
+
+
 参考文献与延伸阅读：
 
 1.Bootstrap的来由和发展。[http://www.alistapart.com/articles/building-twitter-bootstrap/](http://www.alistapart.com/articles/building-twitter-bootstrap/)
@@ -211,3 +252,5 @@ author:
 7.前后端结合讨论  [http://stackoverflow.com/questions/9525170/backend-technology-for-front-end-technologies-like-twitter-bootstrap/](http://stackoverflow.com/questions/9525170/backend-technology-for-front-end-technologies-like-twitter-bootstrap/)
 
 8.Bootstrap英文教程  [http://webdesign.tutsplus.com/tutorials/htmlcss-tutorials/stepping-out-with-bootstrap-from-twitter/](http://webdesign.tutsplus.com/tutorials/htmlcss-tutorials/stepping-out-with-bootstrap-from-twitter/)
+
+9.Knockout Documentation [http://knockoutjs.com/documentation/introduction.html](http://knockoutjs.com/documentation/introduction.html)
