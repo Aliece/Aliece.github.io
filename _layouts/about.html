@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>{{ page.title }}</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        {% include assets/css/default.html %}
+        {% include assets/js/default.html %}
+    </head>
+    <body id="{% include page/id %}">
+        <div class="navbar navbar-fixed-top">
+			  <div class="navbar-inner">
+			    <div class="container">
+			      <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+			      <span class="icon-bar"></span>
+			      <span class="icon-bar"></span>
+			      <span class="icon-bar"></span>
+			      </a>
+			      <header class="brand">Aliece</header>
+			
+			      <nav class="nav-collapse">
+					  <ul class="nav" id="nav_ul">
+					    <li><a href="../">Home</a></li>
+					    <li class="active"><a href="/about" >About</a></li>
+					    <li><a href="/contact">Contact</a></li>
+					    <li><a href="/help-me" >Help Me</a></li>
+					  </ul>
+					</nav>
+			    </div>
+	  		</div>
+		</div>
+        <div class="container">
+            {% include header/introduction.html %}
+            <div class="row">
+                <div class="span8">
+                    {% case page.url %}
+                        {% when '/index.html' %}
+                            {% include posts/latest.html %}
+                        {% when '/archive/index.html' %}
+                            {% include posts/archive.html %}
+                        {% else %}
+                            {% include posts/post.html %}
+                    {% endcase %}
+                </div>
+                <div class="span4 sidebar">
+                	{% include sidebar/search.html %}
+                    {% include sidebar/about.html %}
+                    {% include sidebar/recent.html %}
+                    {% include sidebar/repositories.html %}
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
