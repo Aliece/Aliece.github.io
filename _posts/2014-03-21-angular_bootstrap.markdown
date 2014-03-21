@@ -8,3 +8,6 @@ author:
 ---
 
 未完待续
+具体请先参考Github官网：[http://angular-ui.github.io/bootstrap/](http://angular-ui.github.io/bootstrap/)
+
+这里都是Bootstrap官网上面的例子通过Angular来实现，相当perfect！

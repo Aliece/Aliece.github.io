@@ -1,0 +1,111 @@
+---
+title: Java Web Resource Optimization!
+first: 很多人都觉得一个网站的优化主要是交互方面的IO，当然很多资源文件的加载也是很大一部分消耗，虽然有很多人对JS以及Css等资源文件进行了打包处理，但是我觉得还是有一定的瓶颈的，下面我就来说一说另外一种优化方式：
+layout: default
+author:
+  name: Aliece TT
+  url: http://aliecett.wicp.net
+---
+
+很多人都觉得一个网站的优化主要是交互方面的IO，当然很多资源文件的加载也是很大一部分消耗，虽然有很多人对JS以及Css等资源文件进行了打包处理，但是我觉得还是有一定的瓶颈的，下面我就来说一说另外一种优化方式：
+
+在我们的一个项目工程中，特别是js工程，很多js文件并不像J2EE这种web项目js文件很集中的分散在几个规定的文件夹下面，这样子造成的后果就是在页面加载的时候会造成一定的影响，这里就有一个工具叫做Wro4j，暂且叫他为插件吧，它可以最小化压缩js、css等资源文件，具体图片以及其它文件可不可以加载我现在还没试过，同学们待会儿可以自行去试一试！下面我就来讲讲怎么来用这么一个工具：
+
+首先，我们现在一般的项目都会在Maven下进行管理，这可以节省好多精力来维护它，对于Maven的介绍，这里就不多说了，来一发机票自己去看吧：[http://baike.baidu.com/view/336103.htm?fr=wordsearch](http://baike.baidu.com/view/336103.htm?fr=wordsearch)
+
+关于怎么配置wro4j这么一个东西，官网都有比较全面的介绍：[https://code.google.com/p/wro4j/wiki/GettingStarted](https://code.google.com/p/wro4j/wiki/GettingStarted)
+
+首先我们在自己的maven工程中的pom.xml中进行配置
+
+{% highlight ruby %}
+
+<dependency>
+  <groupId>ro.isdc.wro4j</groupId>
+  <artifactId>wro4j-extensions</artifactId>
+  <version>${wro4j.version}</version>
+</dependency>
+
+<plugin>
+    <groupId>ro.isdc.wro4j</groupId>
+    <artifactId>wro4j-maven-plugin</artifactId>
+    <version>${wro4j.version}</version>
+    <executions>
+        <execution>
+            <id>optimize-web-resources</id>
+            <phase>compile</phase>
+            <goals>
+                <goal>run</goal>
+            </goals>
+        </execution>
+    </executions>
+    <configuration>
+        <ignoreMissingResources>false</ignoreMissingResources>
+        <jsDestinationFolder>
+            ${project.build.directory}/${project.build.finalName}/scripts/wro/
+        </jsDestinationFolder>
+        <cssDestinationFolder>
+            ${project.build.directory}/${project.build.finalName}/styles/wro/
+        </cssDestinationFolder>
+        <wroManagerFactory>
+            ro.isdc.wro.maven.plugin.manager.factory.ConfigurableWroManagerFactory
+        </wroManagerFactory>
+    </configuration>			    
+</plugin>
+
+
+{% endhighlight %}
+
+插件可以直接install：
+
+{% highlight ruby %}
+
+cd wro4j
+mvn install
+
+{% endhighlight %}
+
+在Web-Inf下面创建一个xml文件wro.xml，配置如下:
+
+{% highlight ruby %}
+
+<groups xmlns="http://www.isdc.ro/wro">
+  <group name="g1">
+    <js>classpath:com/mysite/resource/js/1.js</js>
+    <css>classpath:com/mysite/resource/css/1.css</css>
+    <group-ref>g2</group-ref>
+  </group>
+
+  <group name="g2">
+    <js>/dwr/engine.js</js>
+    <group-ref>g3</group-ref>
+    <css>classpath:/static/css/2.css</css>
+    <js>classpath:/static/*.js</js>
+  </group>
+
+  <group name="g3">
+    <css>/static/css/style.css</css>
+    <css>/static/css/global/*.css</css>
+    <js>/static/js/**</js>
+    <js>http://www.site.com/static/plugin.js</js>
+  </group>
+
+</groups>
+
+{% endhighlight %}
+
+最后在网页中引用资源文件使用，看看跟我们平时引入有什么区别：
+
+{% highlight ruby %}
+
+<html>
+  <head>
+    <title>Web Frameworks Comparison</title>
+    <link rel="stylesheet" type="text/css" href="/wro/g2.css" />
+    <script type="text/javascript" src="/wro/g2.js"></script>
+  </head>
+  <body>
+    //Body
+  </body>
+</html>
+
+{% endhighlight %}
