@@ -1,0 +1,133 @@
+---
+title: Bitmap BitSet!
+first: 很多人都觉得一个网站的优化主要是交互方面的IO，当然很多资源文件的加载也是很大一部分消耗，虽然有很多人对JS以及Css等资源文件进行了打包处理，但是我觉得还是有一定的瓶颈的，下面我就来说一说另外一种优化方式：
+layout: default
+author:
+  name: Aliece TT
+  url: http://aliecett.wicp.net
+---
+
+在java中的数据结构有很多，但是很多都只是停留在小数据阶段，如果数据量上去了，很多数据结构都是会挂掉的，所以选择一个好的算法和好的数据结构来实现更优的代码很重要，比如hashmap，hashtable，ConcurrentHashMap等等，但是其中有些是线程安全，有些却不是线程安全的。在这边不做解释。今天在这边主要考虑大数据的排序，什么为大数据呢，我们就说上亿吧，
+
+先看两个题目：
+
+①：对10亿个不重复的整数进行排序。
+
+②：找出10亿个数字中重复的数字。
+
+在一般的算法中我们算下放在内存中要多少G: (10亿 * 32)/(1024*1024*1024*8)=3.6G，这个在一般的机子上面都是跑不起来的，接下来我们就说说bitmap（位图算法）：
+
+在一组大数据中，我们要怎么来排序呢，在常规的数据排序算法中无非就是那几个，但是二进制算法却很简单的能完成这个任务，我们知道byte是占8个bit位，其实我们可以将数组中的值作为bit位的key，value用”0，1“来标识该key是否出现过？直接看代码吧！
+
+{% highlight ruby %}
+
+    public class Bigdata {
+
+
+        int numSize = 100000;
+
+        int arraySize =(int)Math.ceil((double)numSize/32);
+
+        private int array[] = new int[arraySize];
+
+        static BitSet bitSet = new BitSet(100000);
+
+        static BitSet contain = new BitSet(100000);
+
+
+        /**
+         * @param args
+         */
+        public static void main(String[] args) {
+
+            //也可以使用bitset
+            Bigdata test = new Bigdata();
+            test.initBitMap();
+            int sortArray[] = new int[]{1,2,23,34,545,65656,34,757, 23,222};
+            for(int i=0;i<sortArray.length;i++){
+                test.set1(sortArray[i]);
+            }
+            for(int i=0;i<test.numSize;i++){
+    //            if(test.get(i) !=0) {
+    //               System.out.print((i)+" ");
+    //            }
+
+                if(bitSet.get(i)) {
+                    System.out.print((i)+" ");
+                }
+            }
+
+            System.out.println("相同的：");
+
+            for(int i=0;i<test.numSize;i++){
+    //          if(test.get(i) !=0) {
+    //             System.out.print((i)+" ");
+    //          }
+
+              if(contain.get(i)) {
+                  System.out.print((i)+" ");
+              }
+          }
+
+        }
+
+        public void initBitMap(){
+            for(int i=0;i<array.length;i++) {
+                array[i] = 0;
+            }
+        }
+        public void set1(int pos){
+            if(bitSet.get(pos)) {
+                contain.set(pos, true);
+            }
+
+            bitSet.set(pos, true);
+
+            array[pos>>5] =     array[pos>>5] | (1 <<(31-pos% 32) ); //给相应位置1
+
+        }
+
+        public int get(int pos){
+            return array[pos>>5] & (1 <<(31-pos% 32 ));
+        }
+
+
+
+    }
+
+{% endhighlight %}
+
+
+接下来我列出几点关于java编码中几个需要注意的地方，供大家参考：
+
+A、数组拷贝，用System.arraycopy
+
+B、Arrays.sort方法在sort对象数组的时候，采用的是稳定的归并排序
+
+C、Arrays.sort方法在sort内嵌类型数组的时候，采用的不是introsort，不要希望它有stl::sort的速度
+
+D、Collections.sort方法会先把List拷贝成Array，然后调用Arrays.sort，速度很慢
+
+E、ArrayList的自增长比例是1.5，即每次不够了自动增长50%(+1)
+
+F、BitSet内部使用long数组来实现，在32位机器上面的速度不高
+
+G、HashMap的默认填充率是0.75
+
+H、PriorityQueue虽然是最小堆的数值实现，但其速度很慢，量大的时候，不如TreeMap
+
+I、Vector和ArrayList都不能用作需要删除操作的数组，如果需要，建议自己实现，可以采用延迟删除策略
+
+J、Map和HashMap都和c++的stl::map和stl::hashtable实现算法一样
+
+K、StringBuilder和StringBuffer的不同点在于后者可以多线程调用（自然速度就更慢）
+
+L、注意String著名的内存泄露问题！对于原始字符串很长时一定注意不要随便调用substring方法，应该直接拷贝
+
+M、千万注意String.split方法，它的效率特别低，每次都需要编译表达式！
+
+N、java没有数组转对象的功能
+
+O、java对象内存位置是自动分配，无法控制
+
+P、hashmap，bitset都不是线程安全的，需要自己控制，hashtable、ConcurrentHashMap是线程安全的
