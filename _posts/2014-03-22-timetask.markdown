@@ -1,0 +1,248 @@
+---
+title: TimeTask!
+first: 相信大家在日常的开发中都会遇到定时的任务，可能第一时间大家都会选择框架中的某个插件，比如Spring中就有一个quartz，相信大家都很熟悉了，这里就不多做介绍，在这里我说一说TimeTask这么个类
+layout: default
+author:
+  name: Aliece TT
+  url: http://aliecett.wicp.net
+---
+
+相信大家在日常的开发中都会遇到定时的任务，可能第一时间大家都会选择框架中的某个插件，比如Spring中就有一个quartz，相信大家都很熟悉了，这里就不多做介绍，在这里我说一说TimeTask这么个类。
+
+{% highlight ruby %}
+
+public class Timetask {
+
+        /**
+         * @param args
+         */
+        public static void main(String[] args) {
+            Timer tt=new Timer();
+            TimerTaskMine tk=new TimerTaskMine();
+            System.out.println((new Date()).toString());
+            tt.schedule(tk, 1000*5, 1000*2);//第一次先等待5秒，以后每隔2秒走一次run方法。
+
+//          tt.schedule(tk, 1000*3);//等待3秒，然后只执行1次。
+        }
+
+    }
+
+class TimerTaskMine extends TimerTask{
+    int i=0;
+    int j=0;
+
+    @Override
+    public void run() {
+        i++;j++;
+        // TODO Auto-generated method stub
+        System.out.println((new Date()).toString()+"--i--"+i+"--j--"+j);
+        try {
+            Thread.sleep(1000*4);//这句代码，把schedule（1,2,3）第3个参数覆盖掉了，
+            //这里是4秒，即使你在schedule方法中这的是2秒也使用4秒
+            if(this.i==5){
+                this.cancel();
+            }
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+}
+
+
+{% endhighlight %}
+
+如果知道了怎么来用TimeTask，我们完全可以通过servlet来配置这么一套定时器，做出跟quartz一样的效果：利用servlet的load-on-startup配置在init方法中启动一个定时器。
+
+{% highlight ruby %}
+
+  <servlet>
+    <servlet-name>taskServlet</servlet-name>
+    <servlet-class>TaskServlet</servlet-class>
+
+    <init-param>
+      <param-name>dataSourceName</param-name>
+      <param-value>data1</param-value>
+    </init-param>
+
+    <load-on-startup>5</load-on-startup>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>taskServlet</servlet-name>
+    <url-pattern>/taskServlet</url-pattern>
+  </servlet-mapping>
+
+  public class TaskServlet extends HttpServlet {
+
+    public ServletContext servletContext=null;
+    public HttpServletRequest httpServletRequest=null;
+    public Context ctx = null;
+
+    public void init() throws ServletException {
+        System.out.println("TaskServlet  init --------------------------------");
+
+        this.servletContext= this.getServletContext();
+
+        //获取web.xml配置中的初始化参数
+        String dataSourceName = this.getInitParameter("dataSourceName");
+
+        if(dataSourceName==null||dataSourceName.trim().equals("")){
+            System.out.println("初始化参数dataSourceName 未获取到！");
+        }else{
+            System.out.println("初始化参数dataSourceName :"+dataSourceName);
+
+        }
+
+        //定时任务
+        Timer timer = new Timer();
+        TimerTask tt1=new TimerTask("task111");
+
+        SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date startPoint_date=null;
+        String startPoint_Str="2013-08-16 08:37:15";
+        int taskPeriod=20000;//毫秒
+
+        try {
+            startPoint_date=sdf.parse(startPoint_Str);
+            System.out.println("开始执行任务时间点："+startPoint_Str+",此后每隔"+taskPeriod+"毫秒执行一次任务。");
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        timer.scheduleAtFixedRate(tt1, startPoint_date, taskPeriod);
+    }
+
+    public void destroy(){
+        System.out.println("TaskServlet  destroy --------------------------------");
+    }
+
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
+
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+
+        doPost( req, resp);
+    }
+
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+
+        resp.setHeader("cache-control", "no-cache");
+        req.setCharacterEncoding("GBK");
+        resp.setContentType("text/plain; charset=GBK");
+
+
+        work( req, resp);
+    }
+
+    protected void work(HttpServletRequest request, HttpServletResponse resp)
+            throws ServletException, IOException {
+        PrintWriter out = resp.getWriter();
+        HttpSession session = request.getSession();
+
+
+        System.out.println(request.getParameter("startTime"));
+
+        if(request.getParameter("enforceStartTask")!=null&&!request.getParameter("enforceStartTask").trim().equals("")){
+            if(request.getParameter("enforceStartTask").trim().equals("1")){
+
+                TimerTask task = new TimerTask("task");
+                Thread th1=new Thread(task);
+                th1.start();
+
+                System.out.println("收到强制启动定时任务命令，开启一次定时任务。。。");
+            }
+        }
+
+        out.println("success");
+
+    }
+}
+
+{% endhighlight %}
+
+另外附上关于quartz的一些配置：
+
+如果要在web项目中运行的话还要在web.xml 和 Spring的bean配置中加入如下代码：
+
+{% highlight ruby %}
+
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+    <bean name="taskJob" class="util.TaskJob" />
+
+    <bean id="methodInvokingJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+       <property name="targetObject">
+           <ref bean="taskJob" />
+       </property>
+       <property name="targetMethod">
+           <value>SayHello</value>
+       </property>
+    </bean>
+    <!-- 配置触发器 -->
+    <bean id="cronTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+        <!-- 这里不可以直接在属性jobDetail中引用taskJob，因为他要求的是一个jobDetail类型的对象，所以我们得通过MethodInvokingJobDetailFactoryBean来转一下 -->
+       <property name="jobDetail">
+           <ref bean="methodInvokingJobDetail" />
+       </property>
+       <!-- 每天的8点到21点每隔1分钟触发，具体说明见附录 -->
+       <property name="cronExpression">
+           <value>0 * 08-21 * * ?</value>
+       </property>
+
+    </bean>
+
+    <bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+       <!-- 添加触发器 -->
+       <property name="triggers">
+           <list>
+              <ref local="cronTrigger" />
+           </list>
+       </property>
+    </bean>
+
+</beans>
+
+<context-param>
+    <param-name>contextConfigLocation</param-name>
+    <param-value>/WEB-INF/classes/applicationContext.xml</param-value>
+</context-param>
+<context-param>
+    <param-name>log4jConfigLocation</param-name>
+    <param-value>/WEB-INF/log4j.properties</param-value>
+</context-param>
+<listener>
+    <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+</listener>
+
+{% endhighlight %}
+
+字段允许值允许的特殊字符
+秒 0-59 , - * /
+分 0-59 , - * /
+小时 0-23 , - * /
+日期 1-31 , - * ? / L W C
+月份 1-12 或者 JAN-DEC , - * /
+星期 1-7 或者 SUN-SAT , - * ? / L C #
+年（可选）留空, 1970-2099 , - * /
+表达式意义
+"0 0 12 * * ?" 每天中午12点触发
+"0 15 10 ? * *" 每天上午10:15触发
+"0 15 10 * * ?" 每天上午10:15触发
+"0 15 10 * * ? *" 每天上午10:15触发
+"0 15 10 * * ? 2005" 2005年的每天上午10:15触发
+"0 * 14 * * ?" 在每天下午2点到下午2:59期间的每1分钟触发
+"0 0/5 14 * * ?" 在每天下午2点到下午2:55期间的每5分钟触发
+"0 0/5 14,18 * * ?" 在每天下午2点到2:55期间和下午6点到6:55期间的每5分钟触发
+"0 0-5 14 * * ?" 在每天下午2点到下午2:05期间的每1分钟触发
+"0 10,44 14 ? 3 WED" 每年三月的星期三的下午2:10和2:44触发
+"0 15 10 ? * MON-FRI" 周一至周五的上午10:15触发
+"0 15 10 15 * ?" 每月15日上午10:15触发
+"0 15 10 L * ?" 每月最后一日的上午10:15触发
+"0 15 10 ? * 6L" 每月的最后一个星期五上午10:15触发
+"0 15 10 ? * 6L 2002-2005" 2002年至2005年的每月的最后一个星期五上午10:15触发
+"0 15 10 ? * 6#3" 每月的第三个星期五上午10:15触发
