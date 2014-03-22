@@ -16,7 +16,7 @@
 			      <span class="icon-bar"></span>
 			      </a>
 			      <header class="brand">Aliece</header>
-			
+
 			      <nav class="nav-collapse">
 					  <ul class="nav">
 					    <li><a href="../">Home</a></li>
@@ -28,5 +28,151 @@
 			    </div>
 	  		</div>
 		</div>
+
+		<div class="col-md-3">
+          <div class="bs-sidebar hidden-print affix" role="complementary">
+            <ul class="nav nav-list bs-docs-sidenav affix-top">
+			<li class="active">
+				<a href="#personal_information"><i class="icon-chevron-right"></i>personal_information</a>
+				</li>
+				<li class="active">
+				<a href="#education"><i class="icon-chevron-right"></i>education</a>
+				</li>
+				<li class="">
+				<a href="#student"><i class="icon-chevron-right"></i>student information</a>
+				</li>
+				<li class="">
+				<a href="#work_experience"><i class="icon-chevron-right"></i>work_experience</a>
+				</li>
+				<li class="">
+				<a href="#job_intension"><i class="icon-chevron-right"></i>job_intension</a>
+				</li>
+				<li>
+				<a href="#training_experience"><i class="icon-chevron-right"></i>training_experience</a>
+				</li>
+				<li class="">
+				<a href="#language_ability"><i class="icon-chevron-right"></i>language_ability</a>
+				</li>
+				<li class="">
+				<a href="#IT_skills"><i class="icon-chevron-right"></i>IT_skills</a>
+				</li>
+				<li class="">
+				<a href="#project_experience"><i class="icon-chevron-right"></i>project_experience</a>
+				</li>
+				<li class="">
+				<a href="#certificate"><i class="icon-chevron-right"></i>certificate</a>
+				</li>
+            </ul>
+          </div>
+        </div>
+
+		<div class="container">
+        <div class="row">
+            <div class="col-md-12">
+
+
+                <section id="personal_information">
+                    <div class="page-header">
+                        <h1>Personal Information</h1>
+                    </div>
+                </section>
+
+				<section id="education">
+					<div class="page-header">
+					  <h1>Education<small>
+
+					  </small></h1>
+					  </div>
+
+				</section>
+
+				<section id="student">
+					<div class="page-header">
+					  <h1>Student Information<small>
+					  </small></h1>
+					  </div>
+				</section>
+
+				<section id="work_experience">
+					<div class="page-header">
+					  <h1>Work Experience<small>
+					  </small></h1>
+					  </div>
+
+				</section>
+
+				<section id="job_intension">
+					<div class="page-header">
+					  <h1>Job Intension<small>
+					  </small></h1>
+					  </div>
+
+				</section>
+
+				<section id="training_experience">
+					<div class="page-header">
+					  <h1>Training Experience<small>
+					  </small></h1>
+					  </div>
+
+				</section>
+
+				<section id="language_ability">
+					<div class="page-header">
+					  <h1>Language Ability<small>
+					  </small></h1>
+					  </div>
+
+				</section>
+
+				<section id="IT_skills">
+					<div class="page-header">
+					  <h1>IT Skills<small>
+					  </small></h1>
+					  </div>
+
+				</section>
+
+				<section id="project_experience">
+					<div class="page-header">
+					  <h1>Project Experience<small>
+					  </small></h1>
+					  </div>
+
+				</section>
+
+				<section id="certificate">
+					<div class="page-header">
+					  <h1>Certificate<small>
+					  </small></h1>
+					  </div>
+
+				</section>
+
+            </div>
+        </div>
+    </div>
+
+	<script type="text/javascript">
+	$(function() {
+		$('.nav li').click(function(e) {
+			$('.nav li').removeClass('active');
+			//$(e.target).addClass('active');
+			$(this).addClass('active');
+		});
+
+		$("a").click(function() {
+                $("html, body").animate({
+                    scrollTop: $($(this).attr("href")).offset().top + "px"
+                }, {
+                    duration: 300,
+                    easing: "swing"
+                });
+                return false;
+            });
+	});
+
+
+	</script>
     </body>
 </html>
