@@ -3,8 +3,14 @@
     <head>
         <title>{{ page.title }}</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        {% include assets/css/default.html %}
-        {% include assets/js/default.html %}
+		<link rel="stylesheet" href="http://cdn.bootcss.com/twitter-bootstrap/3.0.3/css/bootstrap.min.css">
+		<script src="http://cdn.bootcss.com/jquery/1.10.2/jquery.min.js"></script>
+		<script src="http://cdn.bootcss.com/twitter-bootstrap/3.0.3/js/bootstrap.min.js"></script>
+		<style>
+			section{
+            	height: 800px;
+            	}
+    	</style>
     </head>
     <body id="{% include page/id %}">
         <div class="navbar navbar-inverse navbar-fixed-top">
@@ -15,7 +21,7 @@
 		            <span class="icon-bar"></span>
 		            <span class="icon-bar"></span>
 		          </button>
-		          <div class="navbar-brand hidden-sm" >Bootstrap中文网</div>
+		          <div class="navbar-brand hidden-sm" >Aliece TT</div>
 		        </div>
 
 			      <div class="navbar-collapse collapse">
