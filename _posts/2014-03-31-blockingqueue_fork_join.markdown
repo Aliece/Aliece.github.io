@@ -37,13 +37,13 @@ LinkedBlockingDeque：一个由链表结构组成的双向阻塞队列。
 
 {% highlight ruby %}
 
-public class CountTask extends RecursiveTask<Integer>{
+public class Count extends RecursiveTask<Integer>{
 	
 	private static final int all= 2;
 	private int start;
 	private int end;
 
-	public CountTask(int start, int end) {
+	public Count(int start, int end) {
 		this.start= start;
 		this.end = end;
 	}
@@ -61,16 +61,16 @@ public class CountTask extends RecursiveTask<Integer>{
 			}
 		}else {
 			 int middle = (start+end) / 2;
-			 CountTask leftTask = new CountTask(start, middle);
-			 CountTask rightTask = new CountTask(middle + 1,end);
+			 Count left = new Count(start, middle);
+			 Count right = new Count(middle + 1,end);
 			 
-			 leftTask.fork();
-			 rightTask.fork();
+			 left.fork();
+			 right.fork();
 			 
-			 int leftResult = leftTask.join();
-			 int rightResult = rightTask.join();
+			 int leftsum = left.join();
+			 int rightsum = right.join();
 			 
-			 sum = leftResult + rightResult;
+			 sum = leftsum + rightsum;
 		}
 		return sum;
 	}
@@ -79,7 +79,7 @@ public class CountTask extends RecursiveTask<Integer>{
 		
 		ForkJoinPool forkJoinPool = new ForkJoinPool();
 		
-		CountTask task = new CountTask(1, 4);
+		Count task = new Count(1, 4);
 		
 		forkJoinPool.execute(task);  
 		
