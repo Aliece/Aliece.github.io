@@ -7,4 +7,10 @@ author:
   url: http://aliecett.wicp.net
 ---
 
+安装参考:
+
+[http://blog.csdn.net/hguisu/article/details/7237395](http://blog.csdn.net/hguisu/article/details/7237395)
+
+[http://www.cnblogs.com/xia520pi/archive/2012/05/16/2503770.html](http://www.cnblogs.com/xia520pi/archive/2012/05/16/2503770.html)
+
 未完待续
