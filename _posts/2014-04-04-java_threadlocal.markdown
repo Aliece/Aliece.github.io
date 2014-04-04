@@ -1,6 +1,6 @@
 ---
-title: Java TEST!
-first: Java用两个栈（Stack）实现一个队列（Queue）
+title: Java ThreadLocal!
+first: Java ThreadLocal
 layout: default
 author:
   name: Aliece TT
