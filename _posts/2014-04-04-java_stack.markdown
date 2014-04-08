@@ -129,7 +129,24 @@ System.out.println("i:"+i);//i:3
 
 {% endhighlight %}
 
-##四、链表的创建，添加以及去重
+##四、取N位小数
+
+{% highlight ruby %}
+
+public static float getF(int digits, double d) {
+	NumberFormat nf = NumberFormat.getInstance();
+	nf.setGroupingUsed(false);
+	nf.setMaximumFractionDigits(digits);
+	return Float.valueOf(nf.format(d));
+}
+
+public static void main(String[] args) {
+	System.out.println(getF(4,(8.93-7.2)/7.2));
+}
+
+{% endhighlight %}
+
+##五、链表的创建，添加以及去重
 
 {% highlight ruby %}
 

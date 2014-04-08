@@ -13,15 +13,15 @@ Java并发中的有很多数据结构都是为了多线程服务的，比如阻�
 
 在java7里面，一共给我们提供了7个阻塞队列：
 
-ArrayBlockingQueue ：一个由数组结构组成的有界阻塞队列。
+ArrayBlockingQueue ：一个由数组结构组成的有界阻塞队列,FIFO队列。
 
-LinkedBlockingQueue ：一个由链表结构组成的有界阻塞队列。
+LinkedBlockingQueue ：一个由链表结构组成的有界阻塞队列,FIFO队列。
 
 PriorityBlockingQueue ：一个支持优先级排序的无界阻塞队列。
 
 DelayQueue：一个使用优先级队列实现的无界阻塞队列。
 
-SynchronousQueue：一个不存储元素的阻塞队列。
+SynchronousQueue：一个不存储元素的阻塞队列,维护一个排除的线程清单，等把元素加入或移出队列，不为队列元素维护任何存储空间。
 
 LinkedTransferQueue：一个由链表结构组成的无界阻塞队列。
 
