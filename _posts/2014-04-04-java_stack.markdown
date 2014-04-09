@@ -102,11 +102,15 @@ public class Anagrams {
 
 {% endhighlight %}
 
-##三、i++;++i;
+##三、i++;++i;i--;--i;
 
 i++：先赋值再自加；
 
-++i：先自加再赋值。
+++i：先自加再赋值;
+
+i--：先赋值再自减；
+
+--i：先自减再赋值.
 
 {% highlight ruby %}
 
