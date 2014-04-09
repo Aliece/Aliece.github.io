@@ -36,4 +36,8 @@ Guice 主要概念小结：
 使用 Injector 引导应用程序。
 
 使用 @Provides 方法增加灵活性。
+
+[源码地址](https://code.google.com/p/google-guice/)
+
+[使用教程](http://www.blogjava.net/xylz/archive/2009/12/22/306955.html)
 　
