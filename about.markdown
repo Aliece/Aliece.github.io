@@ -3,7 +3,7 @@ layout: about
 title: About
 ---
 
-请我喝瓶水吧[请喝水](https://me.alipay.com/aliece)
+<p><a href="https://me.alipay.com/aliece">请我喝瓶水吧</a></p>
 
 I'm an IT Professional, Systems Engineer and a 程序猿.
 
