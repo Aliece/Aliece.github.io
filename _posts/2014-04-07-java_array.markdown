@@ -15,9 +15,6 @@ author:
 
 public class N {
 	
-
-public class N {
-	
 	public static int countN(int[] array) {
 		int n = array.length;
 		int[] p = new int[n];

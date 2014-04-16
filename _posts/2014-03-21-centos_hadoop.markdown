@@ -13,4 +13,20 @@ author:
 
 [http://www.cnblogs.com/xia520pi/archive/2012/05/16/2503770.html](http://www.cnblogs.com/xia520pi/archive/2012/05/16/2503770.html)
 
+http://www.michael-noll.com/tutorials/running-hadoop-on-ubuntu-linux-single-node-cluster/
+
+如果出现localhost: Error: JAVA_HOME is not set. 错误，参考：http://chenwq.iteye.com/blog/1161530
+
+官网资料： http://hadoop.apache.org/common/docs/r0.20.2/mapred_tutorial.html
+
+http://cloud.csdn.net/a/20100901/278948.html
+
+http://hadoop.apache.org/common/docs/r0.19.2/cn/quickstart.html
+
+Hadoop Hive [http://blog.csdn.net/kunshan_shenbin/article/details/7105319](http://blog.csdn.net/kunshan_shenbin/article/details/7105319)
+
+Hadoop HBase [http://blog.csdn.net/kunshan_shenbin/article/details/7209990](http://blog.csdn.net/kunshan_shenbin/article/details/7209990)
+
+Hadoop Hive HBase[http://blog.csdn.net/kunshan_shenbin/article/details/7210689](http://blog.csdn.net/kunshan_shenbin/article/details/7210689)
+
 未完待续

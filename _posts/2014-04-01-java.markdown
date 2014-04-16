@@ -101,4 +101,32 @@ public class Singleton {
 	}
 }
 
+非线程安全实例
+
+public class UnsafeLazyInitialization {
+	private static Instance instance;
+	public static Instance getInstance() {
+		if (instance == null) //1：A线程执行
+		instance = new Instance(); //2：B线程执行
+		return instance;
+	}
+}
+
+基于volatile的双重检查锁定的解决方案
+
+public class SafeDoubleCheckedLocking {
+    private volatile static Instance instance;
+
+    public static Instance getInstance() {
+        if (instance == null) {
+            synchronized (SafeDoubleCheckedLocking.class) {
+                if (instance == null)
+                    instance = new Instance();//instance为volatile，现在没问题了
+            }
+        }
+        return instance;
+    }
+}
 {% endhighlight %}
+
+单例模式不一定是单例，可以通过自定义Classloader去加载这个实例 clone和反射也可以产生不同的实例对象。

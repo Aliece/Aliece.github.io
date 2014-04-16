@@ -1,0 +1,709 @@
+---
+title: SQL & Not Only SQL!
+first: 就目前来说，RDBMS还是占据着市场上大多数的位置，虽然很多公司都已经渐渐的把某些特定的业务由普通的RDNMS转型为NOSQL，但也只是小部分，RDBMS无非就是行与列的结合，表与表之间固定的存储结构和依赖关系，二位的关系模型体现出来的是一种结构简单化，关系规范化，数据单一化的特点。
+layout: default
+author:
+  name: Aliece TT
+  url: http://aliecett.wicp.net
+---
+
+就目前来说，RDBMS还是占据着市场上大多数的位置，虽然很多公司都已经渐渐的把某些特定的业务由普通的RDNMS转型为NOSQL，但也只是小部分，RDBMS无非就是行与列的结合，表与表之间固定的存储结构和依赖关系，二位的关系模型体现出来的是一种结构简单化，关系规范化，数据单一化的特点。
+
+如果说RDBMS适用于存储结构化数据，那么Nosql（Not-Only-SQL）就是为半结构化数据存储而生的。Nosql数据库都有一个显著的特点，即采用Key-Value的形式对数据进行存储，且结构不固定，也就是说一个表的任意一行的列的数量可以不相同。并且就算定义字段，在不使用的情况下，也并不会占用存储空间，这样在某种程度上来说也降低了一定的存储开销。当然Nosql的数据库不仅仅只是为了解决存储问题，它还能够带给企业非常多的实惠，比如可以部署在廉价的PC服务器上集群用于处理大规模的海量数据，并且由于没有SQL->DBMS的编译过程耗时，Nosql将会在某些情况下更为高效。Nosql的数据库在扩展性和可用性方面同样也非常优秀。
+
+
+##一、HBASE
+
+HBase环境部署：[http://blog.chinaunix.net/uid-7848254-id-3802236.html](http://blog.chinaunix.net/uid-7848254-id-3802236.html)
+
+HBASE SHELL 的使用类似于Oracle的SQL PLUS或者是MYSQL的Command Line Client操作。
+
+创建一个表则可以使用命令“create 'TableName','Columnfamily'“
+
+删除一个表可以使用命令”Diasable 'TableName'“ ”drop 'TableName'“
+
+插入、更新数据可以使用命令“put 'TableName','RowKey','ColumnFamily:ColumnName','value'”(RowKey就是一个索引，如果RowKey不存在就是添加，反之就是更新。)
+
+数据检索可以通过命令“get 'TableName','Row'”
+
+HBASE Client API
+
+
+{% highlight ruby %}
+
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<configuration>
+	<property>
+		<name>hbase.rootdir</name>
+		<value>file:///home/johngao/hadoop/hadoop-data</value>
+	</property>
+	<property>
+		<name>hbase.cluster.distributed</name>
+		<value>false</value>
+	</property>
+	<property>
+		<name>hbase.zookeeper.property.clientPort</name>
+		<value>2181</value>
+	</property>
+	<property>
+		<name>hbase.zookeeper.quorum</name>
+		<value>192.168.1.102</value>
+	</property>
+</configuration>
+
+{% endhighlight %}
+
+
+{% highlight ruby %}
+
+ * HBase客户端调用示例
+public class HBaseTest {
+	private static Configuration cfg;
+	private static HTablePool tablePool;
+	private Logger log = Logger.getLogger(this.getClass().getName());
+
+	static {
+		cfg = HBaseConfiguration.create();
+
+		/* 创建tablePool，并定义Pool大小 */
+		tablePool = new HTablePool(cfg, 1000);
+	}
+
+	@Test
+	public void testInsert() {
+		try {
+			final String TABLE_NAME = "test_table";
+
+			/* 创建HTable对象获取表信息 */
+			HTableInterface table = tablePool.getTable(TABLE_NAME);
+
+			/* 创建Row Key */
+			final String ROW_KEY = "JohnGao"
+					+ ":"
+					+ String.valueOf(Long.MAX_VALUE
+							- System.currentTimeMillis());
+
+			/* 创建Put对象，插入行级数据 */
+			Put put = new Put(ROW_KEY.getBytes());
+			put.add("message".getBytes(), "content1".getBytes(),
+					"Hello HBase1".getBytes());
+			put.add("message".getBytes(), "content2".getBytes(),
+					"Hello HBase2".getBytes());
+
+			/* 开始执行数据添加 */
+			table.put(put);
+
+			/* 资源释放 */
+			release(table);
+			log.info("数据插入成功");
+		} catch (IOException e) {
+			log.error("数据插入失败", e);
+		}
+	}
+
+	@Test
+	public void testGet() {
+		try {
+			final String TABLE_NAME = "test_table";
+
+			/* 创建HTable对象获取表信息 */
+			HTableInterface table = tablePool.getTable(TABLE_NAME);
+
+			/* 创建Row Key */
+			final String ROW_KEY = "JohnGao"
+					+ ":"
+					+ String.valueOf(Long.MAX_VALUE
+							- System.currentTimeMillis());
+
+			Get get = new Get(ROW_KEY.getBytes());
+
+			/* 定义需要检索的列 */
+			get.addColumn("message".getBytes(), "content1".getBytes());
+			Result result = table.get(get);
+
+			/* 输出数据 */
+			System.out.println(Bytes.toString(result.getValue(
+					"message".getBytes(), "content1".getBytes())));
+
+			/* 资源释放 */
+			release(table);
+		} catch (IOException e) {
+			log.error("数据检索失败", e);
+		}
+	}
+
+	/**
+	 * HBase资源释放
+	 * 
+	 */
+	public void release(HTableInterface table) throws IOException {
+		/* 清空缓冲区并提交 */
+		table.flushCommits();
+
+		/* 将Table对象归还Pool */
+		tablePool.putTable(table);
+	}
+}
+
+{% endhighlight %}
+
+
+{% highlight ruby %}
+
+@Test
+public void queryDatabyFilter(String tablePrefix, int startNum,
+		int totalNum, String rowKey) {
+	List<Filter> filters = new ArrayList<Filter>();
+	try {
+		final String TABLE_NAME = "test_table";
+
+		/* 创建HTable对象获取表信息 */
+		HTableInterface table = tablePool.getTable(TABLE_NAME);
+
+		/* 定义行过滤器 */
+		Filter rowFilter = new RowFilter(CompareFilter.CompareOp.EQUAL,
+				new SubstringComparator(rowKey));
+		filters.add(rowFilter);
+
+		/* 定义分页过滤器 */
+		Filter pageFilter = new PageFilter(totalNum);
+		filters.add(pageFilter);
+
+		/* 添加过滤器列表 */
+		FilterList filterList = new FilterList(filters);
+		int totalRows = 0;
+		byte[] lastRow = null;
+		Scan can = new Scan();
+		
+		/* 锁定Region块范围 */
+		can.setStartRow(rowKey.getBytes());
+		can.setStopRow(new String(rowKey + ":"
+				+ String.valueOf(Long.MAX_VALUE)).getBytes());
+		can.setFilter(filterList);
+		for (int i = 0; i < 1; i--) {
+			if (null != lastRow) {
+				byte[] startRow = Bytes.add(lastRow,
+						String.valueOf(startNum).getBytes());
+				can.setStartRow(startRow);
+			}
+			ResultScanner rts = table.getScanner(can);
+			int localRows = 0;
+			Result rt = null;
+			while ((rt = rts.next()) != null) {
+				System.out.println(Bytes.toString(rt.getValue(
+						"message".getBytes(), "message".getBytes())));
+				totalRows++;
+				lastRow = rt.getRow();
+			}
+
+			/* 资源释放 */
+			release(table);
+			if (0 == localRows)
+				break;
+		}
+	} catch (IOException e) {
+		log.error("获取数据失败", e);
+	}
+}
+
+{% endhighlight %}
+
+就目前版本而言HBase并没有提供缺省的二级索引支持，但在开发过程中我们可以通过建立反向索引表的方式实现自定义的二级索引检索。假设我们设定主表A，RowKey为’Account‘，字段为’PhoneNumber‘，反向索引表B的RowKey为’PhoneNumber‘，字段为A表的RowKey，这样的结构既可以满足二级索引检索。
+
+HBase内置有ZooKeeper，也可以使用外部ZooKeeper。让HBase使用一个已有的不被HBase托管的Zookeep集群，需要设置 conf/hbase env sh文件中的HBASE_MANAGES_ZK 属性为 false
+
+... # Tell HBase whether it should manage it's own instance of Zookeeper or not. export HBASE_MANAGES_ZK=false
+
+接下来，指明Zookeeper的host和端口。可以在 hbase-site.xml中设置, 也可以在HBase的CLASSPATH下面加一个zoo.cfg配置文件。 HBase 会优先加载 zoo.cfg 里面的配置，把hbase-site.xml里面的覆盖掉.
+
+当HBase托管ZooKeeper的时候，Zookeeper集群的启动是HBase启动脚本的一部分。但你需要自己去运行。你可以这样做
+
+${HBASE_HOME}/bin/hbase-daemons sh {start,stop} zookeeper
+
+你可以用这条命令启动ZooKeeper而不启动HBase. HBASE_MANAGES_ZK 的值是 false， 如果你想在HBase重启的时候不重启ZooKeeper,你可以这样做，对于独立Zoopkeeper的问题，你可以在 Zookeeper启动得到帮助
+
+ZooKeeper：
+
+[http://www.ibm.com/developerworks/cn/opensource/os-cn-zookeeper/](http://www.ibm.com/developerworks/cn/opensource/os-cn-zookeeper/)
+
+[http://zookeeper.apache.org/doc/r3.3.2/recipes.html](http://zookeeper.apache.org/doc/r3.3.2/recipes.html)
+
+##二、MongoDB
+
+MongoDB是一个基于分布式文件存储的数据库。由C++语言编写。旨在为WEB应用提供可扩展的高性能数据存储解决方案。它是一个介于关系数据库和非关系数据库之间的产品，是非关系数据库当中功能最丰富，最像关系数据库的。他支持的数据结构非常松散，是类似json的bson格式，因此可以存储比较复杂的数据类型。Mongo最大的特点是他支持的查询语言非常强大，其语法有点类似于面向对象的查询语言，几乎可以实现类似关系数据库单表查询的绝大部分功能，而且还支持对数据建立索引。
+
+所谓“面向集合”（Collection-Oriented），意思是数据被分组存储在数据集中，被称为一个集合（Collection)。每个集合在数据库中都有一个唯一的标识名，并且可以包含无限数目的文档。集合的概念类似关系型数据库（RDBMS）里的表（table），不同的是它不需要定义任何模式（schema)。模式自由（schema-free)，意味着对于存储在mongodb数据库中的文件，我们不需要知道它的任何结构定义。如果需要的话，你完全可以把不同结构的文件存储在同一个数据库里。存储在集合中的文档，被存储为键-值对的形式。键用于唯一标识一个文档，为字符串类型，而值则可以是各种复杂的文件类型。我们称这种存储形式为BSON（Binary Serialized Document Format）。
+
+MongoDB存储BSON对象到collections,这一系列的数据库名和collection名被称为一个命名空间。如同：java.util.List;用来管理数据库中的数据。
+
+mongodb可以对某个字段建立索引，可以建立组合索引、唯一索引，也可以删除索引，建立索引就意味着增加空间开销。默认情况下每个表都会有一个唯一索引：_id，如果插入数据时没有指定_id，服务会自动生成一个_id，为了充分利用已有索引，减少空间开销，最好是自己指定一个unique的key为_id，通常用对象的ID比较合适，比如商品的ID。
+
+它不支持连表操作
+
+不支持事务，但是支持原子操作（findAndModify，以及增加、减少）
+
+Mongodb结构非常灵活，它可以不遵守集合结构的固定模式，相对于关系数据库而言就是,定义了表结构，数据一定要遵守字段定义的要求，但是Mongodb就可以不这样由于它缺乏连接表的操作，但是它引进一个新的特新就是：集合之间可以互相嵌入。
+ 
+ 它在任何时候都可以动态的添加属性，不像关系数据那样还需要alter table
+
+
+shell操作数据库：
+
+{% highlight ruby %}
+ 
+show dbs:显示数据库列表 
+show collections：显示当前数据库中的集合（类似关系数据库中的表） 
+show users：显示用户
+
+use <db name>：切换当前数据库，这和MS-SQL里面的意思一样 
+db.help()：显示数据库操作命令，里面有很多的命令 
+db.foo.help()：显示集合操作命令，同样有很多的命令，foo指的是当前数据库下，一个叫foo的集合，并非真正意义上的命令 
+db.foo.find()：对于当前数据库中的foo集合进行数据查找（由于没有条件，会列出所有数据） 
+db.foo.find( { a : 1 } )：对于当前数据库中的foo集合进行查找，条件是数据中有一个属性叫a，且a的值为1
+
+MongoDB没有创建数据库的命令，但有类似的命令。
+
+如：如果你想创建一个“myTest”的数据库，先运行use myTest命令，之后就做一些操作（如：db.createCollection('user')）,这样就可以创建一个名叫“myTest”的数据库。
+
+数据库常用命令
+
+1、Help查看命令提示
+
+ help
+
+  db.help();
+
+  db.yourColl.help();
+
+  db.youColl.find().help();
+
+  rs.help();
+
+2、切换/创建数据库
+
+ use yourDB;  当创建一个集合(table)的时候会自动创建当前数据库
+
+3、查询所有数据库
+
+ show dbs;
+
+4、删除当前使用数据库
+
+ db.dropDatabase();
+
+5、从指定主机上克隆数据库
+
+ db.cloneDatabase(“127.0.0.1”); 将指定机器上的数据库的数据克隆到当前数据库
+
+6、从指定的机器上复制指定数据库数据到某个数据库
+
+ db.copyDatabase("mydb", "temp", "127.0.0.1");将本机的mydb的数据复制到temp数据库中
+
+7、修复当前数据库
+
+ db.repairDatabase();
+
+8、查看当前使用的数据库
+
+ db.getName();
+
+ db; db和getName方法是一样的效果，都可以查询当前使用的数据库
+
+9、显示当前db状态
+
+ db.stats();
+
+10、当前db版本
+
+ db.version();
+
+11、查看当前db的链接机器地址
+
+ db.getMongo();
+
+Collection聚集集合
+
+1、创建一个聚集集合（table）
+
+ db.createCollection(“collName”, {size: 20, capped: 5, max: 100});
+
+2、得到指定名称的聚集集合（table）
+
+ db.getCollection("account");
+
+3、得到当前db的所有聚集集合
+
+ db.getCollectionNames();
+
+4、显示当前db所有聚集索引的状态
+
+ db.printCollectionStats();
+
+ 用户相关
+
+1、添加一个用户
+
+ db.addUser("name");
+
+ db.addUser("userName", "pwd123", true); 添加用户、设置密码、是否只读
+
+2、数据库认证、安全模式
+
+ db.auth("userName", "123123");
+
+3、显示当前所有用户
+
+ show users;
+
+4、删除用户
+
+ db.removeUser("userName");
+
+其他
+1、查询之前的错误信息
+ db.getPrevError();
+2、清除错误记录
+ db.resetError();
+ 
+查看聚集集合基本信息
+1、查看帮助  db.yourColl.help();
+2、查询当前集合的数据条数  db.yourColl.count();
+3、查看数据空间大小 db.userInfo.dataSize();
+4、得到当前聚集集合所在的db db.userInfo.getDB();
+5、得到当前聚集的状态 db.userInfo.stats();
+6、得到聚集集合总大小 db.userInfo.totalSize();
+7、聚集集合储存空间大小 db.userInfo.storageSize();
+8、Shard版本信息  db.userInfo.getShardVersion()
+9、聚集集合重命名 db.userInfo.renameCollection("users"); 将userInfo重命名为users
+10、删除当前聚集集合 db.userInfo.drop();
+聚集集合查询
+
+1、查询所有记录
+db.userInfo.find();
+相当于：select* from userInfo;
+默认每页显示20条记录，当显示不下的情况下，可以用it迭代命令查询下一页数据。注意：键入it命令不能带“；”
+但是你可以设置每页显示数据的大小，用DBQuery.shellBatchSize= 50;这样每页就显示50条记录了。
+ 
+2、查询去掉后的当前聚集集合中的某列的重复数据
+db.userInfo.distinct("name");
+会过滤掉name中的相同数据
+相当于：select distict name from userInfo;
+ 
+3、查询age = 22的记录
+db.userInfo.find({"age": 22});
+相当于： select * from userInfo where age = 22;
+ 
+4、查询age > 22的记录
+db.userInfo.find({age: {$gt: 22}});
+相当于：select * from userInfo where age >22;
+ 
+5、查询age < 22的记录
+db.userInfo.find({age: {$lt: 22}});
+相当于：select * from userInfo where age <22;
+ 
+6、查询age >= 25的记录
+db.userInfo.find({age: {$gte: 25}});
+相当于：select * from userInfo where age >= 25;
+ 
+7、查询age <= 25的记录
+db.userInfo.find({age: {$lte: 25}});
+ 
+8、查询age >= 23 并且 age <= 26
+db.userInfo.find({age: {$gte: 23, $lte: 26}});
+ 
+9、查询name中包含 mongo的数据
+db.userInfo.find({name: /mongo/});
+//相当于%%
+select * from userInfo where name like ‘%mongo%’;
+ 
+10、查询name中以mongo开头的
+db.userInfo.find({name: /^mongo/});
+select * from userInfo where name like ‘mongo%’;
+ 
+11、查询指定列name、age数据
+db.userInfo.find({}, {name: 1, age: 1});
+相当于：select name, age from userInfo;
+当然name也可以用true或false,当用ture的情况下河name:1效果一样，如果用false就是排除name，显示name以外的列信息。
+ 
+12、查询指定列name、age数据, age > 25
+db.userInfo.find({age: {$gt: 25}}, {name: 1, age: 1});
+相当于：select name, age from userInfo where age >25;
+ 
+13、按照年龄排序
+升序：db.userInfo.find().sort({age: 1});
+降序：db.userInfo.find().sort({age: -1});
+ 
+14、查询name = zhangsan, age = 22的数据
+db.userInfo.find({name: 'zhangsan', age: 22});
+相当于：select * from userInfo where name = ‘zhangsan’ and age = ‘22’;
+ 
+15、查询前5条数据
+db.userInfo.find().limit(5);
+相当于：selecttop 5 * from userInfo;
+ 
+16、查询10条以后的数据
+db.userInfo.find().skip(10);
+相当于：select * from userInfo where id not in (
+selecttop 10 * from userInfo
+);
+ 
+17、查询在5-10之间的数据
+db.userInfo.find().limit(10).skip(5);
+可用于分页，limit是pageSize，skip是第几页*pageSize
+ 
+18、or与 查询
+db.userInfo.find({$or: [{age: 22}, {age: 25}]});
+相当于：select * from userInfo where age = 22 or age = 25;
+ 
+19、查询第一条数据
+db.userInfo.findOne();
+相当于：selecttop 1 * from userInfo;
+db.userInfo.find().limit(1);
+ 
+20、查询某个结果集的记录条数
+db.userInfo.find({age: {$gte: 25}}).count();
+相当于：select count(*) from userInfo where age >= 20;
+ 
+21、按照某列进行排序
+db.userInfo.find({sex: {$exists: true}}).count();
+相当于：select count(sex) from userInfo;
+索引
+
+1、创建索引
+db.userInfo.ensureIndex({name: 1});
+db.userInfo.ensureIndex({name: 1, ts: -1});
+ 
+2、查询当前聚集集合所有索引
+db.userInfo.getIndexes();
+ 
+3、查看总索引记录大小
+db.userInfo.totalIndexSize();
+ 
+4、读取当前集合的所有index信息
+db.users.reIndex();
+ 
+5、删除指定索引
+db.users.dropIndex("name_1");
+ 
+6、删除所有索引索引
+db.users.dropIndexes();
+ 修改、添加、删除集合数据
+
+1、添加
+db.users.save({name: ‘zhangsan’, age: 25, sex: true});
+添加的数据的数据列，没有固定，根据添加的数据为准
+ 
+2、修改
+db.users.update({age: 25}, {$set: {name: 'changeName'}}, false, true);
+相当于：update users set name = ‘changeName’ where age = 25;
+ 
+db.users.update({name: 'Lisi'}, {$inc: {age: 50}}, false, true);
+相当于：update users set age = age + 50 where name = ‘Lisi’;
+ 
+db.users.update({name: 'Lisi'}, {$inc: {age: 50}, $set: {name: 'hoho'}}, false, true);
+相当于：update users set age = age + 50, name = ‘hoho’ where name = ‘Lisi’;
+ 
+3、删除
+db.users.remove({age: 132});
+ 
+4、查询修改删除
+db.users.findAndModify({
+    query: {age: {$gte: 25}}, 
+    sort: {age: -1}, 
+    update: {$set: {name: 'a2'}, $inc: {age: 2}},
+    remove: true
+});
+ 
+db.runCommand({ findandmodify : "users", 
+    query: {age: {$gte: 25}}, 
+    sort: {age: -1}, 
+    update: {$set: {name: 'a2'}, $inc: {age: 2}},
+    remove: true
+});
+update 或 remove 其中一个是必须的参数; 其他参数可选。
+
+参数
+
+详解
+
+默认值
+
+query
+
+查询过滤条件
+
+{}
+
+sort
+
+如果多个文档符合查询过滤条件，将以该参数指定的排列方式选择出排在首位的对象，该对象将被操作
+
+{}
+
+remove
+
+若为true，被选中对象将在返回前被删除
+
+N/A
+
+update
+
+一个 修改器对象
+
+N/A
+
+new
+
+若为true，将返回修改后的对象而不是原始对象。在删除操作中，该参数被忽略。
+
+false
+
+fields
+
+参见Retrieving a Subset of Fields (1.5.0+)
+
+All fields
+
+upsert
+
+创建新对象若查询结果为空。 示例 (1.5.4+)
+
+false
+
+语句块操作
+
+1、简单Hello World
+print("Hello World!");
+这种写法调用了print函数，和直接写入"Hello World!"的效果是一样的；
+ 
+2、将一个对象转换成json
+tojson(new Object());
+tojson(new Object('a'));
+ 
+3、循环添加数据
+> for (var i = 0; i < 30; i++) {
+... db.users.save({name: "u_" + i, age: 22 + i, sex: i % 2});
+... };
+这样就循环添加了30条数据，同样也可以省略括号的写法
+> for (var i = 0; i < 30; i++) db.users.save({name: "u_" + i, age: 22 + i, sex: i % 2});
+也是可以的，当你用db.users.find()查询的时候，显示多条数据而无法一页显示的情况下，可以用it查看下一页的信息；
+ 
+4、find 游标查询
+>var cursor = db.users.find();
+> while (cursor.hasNext()) { 
+    printjson(cursor.next()); 
+}
+这样就查询所有的users信息，同样可以这样写
+var cursor = db.users.find();
+while (cursor.hasNext()) { printjson(cursor.next); }
+同样可以省略{}号
+ 
+5、forEach迭代循环
+db.users.find().forEach(printjson);
+forEach中必须传递一个函数来处理每条迭代的数据信息
+ 
+6、将find游标当数组处理
+var cursor = db.users.find();
+cursor[4];
+取得下标索引为4的那条数据
+既然可以当做数组处理，那么就可以获得它的长度：cursor.length();或者cursor.count();
+那样我们也可以用循环显示数据
+for (var i = 0, len = c.length(); i < len; i++) printjson(c[i]);
+ 
+7、将find游标转换成数组
+> var arr = db.users.find().toArray();
+> printjson(arr[2]);
+用toArray方法将其转换为数组
+ 
+8、定制我们自己的查询结果
+只显示age <= 28的并且只显示age这列数据
+db.users.find({age: {$lte: 28}}, {age: 1}).forEach(printjson);
+db.users.find({age: {$lte: 28}}, {age: true}).forEach(printjson);
+排除age的列
+db.users.find({age: {$lte: 28}}, {age: false}).forEach(printjson);
+ 
+9、forEach传递函数显示信息
+db.things.find({x:4}).forEach(function(x) {print(tojson(x));});
+
+{% endhighlight %}
+
+##三、oracle mysql一些不同
+
+{% highlight ruby %}
+
+关于用户的概念： 
+1） 在Oracle中有一个用户的概念，用来登陆到数据库，比如openlab用户。用户拥有一定的权限，可以创建表、
+视图等。用户名下的数据表、视图等对象的集合叫做Schema。 数据库安装好后，建立的默认用户是：sys，system，scott。 
+创建用户：SQL>create user 用户名 identified by 密码; --（一般是DBA来创建，普通用户没有创建用户的权限） 
+在SQLPLus工具中切换用户：SQL>conn 用户名/密码@主机字符串 查看当前用户：SQL>show user 
+显示所有的用户：SQL>select * from all_users; 显示用户下的表：SQL>select * from tab;  
+2） MYSQL中对应于Oracle中用户的概念是database。登陆后要先建立database，才能建表。默认创建的
+database是mysql，test。 
+创建数据库： mysql> create database 库名 切换用户：mysql>use database库名 查看当前用户：mysql > connect 
+显示所有数据库：mysql>show databases; 显示用户下的表：mysql>show tables 
+
+日期格式转换： 1） Oracle： 
+SQL> select to_char(sysdate,'yyyy-mm-dd') from dual; SQL> select to_char(sysdate,'hh24-mi-ss') from dual; 
+2） Mysql 
+mysql> select date_format(now(),'%Y-%m-%d'); mysql> select time_format(now(),'%H-%i-%S');
+
+日期函数：6个月以后 1） Oracle：  
+SQL> select add_months(sysdate,6) from dual; 
+2） Mysql：  
+mysql> select date_add(now(),interval 6 month);
+
+字符函数：从’helloworld’中截取hello  1） Oracle：  
+SQL> select substr('helloworld',1,5) from dual; 结果是：hello 
+2） Mysql：  
+select substring('helloworld',1,5); 
+
+修改表名： 1） Oracle：  
+SQL> rename oldname to newname; --也可以用来修改各种对象名称 
+2） Mysql：  
+mysql>alter table oldname to newname;
+
+取前5条记录： 
+1） Oracle：  
+SQL> select * from 表名 where rownum<6; 
+2） Mysql：  
+mysql> select * from 表名 limit 5; 
+
+取第5条到第10条记录，共6条： 
+1） Oracle：  
+SQL> select * from  
+(select id,name,rownum rn from 表名)  where rn between 5 and 10; 
+2） Mysql：  
+mysql> select * from 表名 limit 5, 6; --从第5条开始，取6条。 
+
+主键自增长： 
+1） Oracle：  
+使用序列实现，比如创建序列，起点是1000，步进是1： 
+SQL> Create sequence myseq start with 1000 increment by 1;  
+增加记录： 
+SQL> insert into student(id,name) values(myseq.nextval, 'peter'); 
+2） Mysql： 
+在建表是指定主键自增长： 
+mysql> create table student( id int auto_increment primary key, name char(20)); 
+增加记录： 
+mysql> insert into student(name) values('peter'); mysql> select * from student; 
++----+-------+ | id | name  | +----+-------+ |  1 | peter | +----+-------+ 
+1 row in set (0.00 sec) 
+
+关于组函数 
+select deptno, count(*) from emp; 
+这种语法，在MySQL中是正常的，而在Oracle中是会报错的，select列表中的deptno列必须跟在group by短语后： 
+select deptno, count(*) from emp group by deptno; 
+
+
+查看Oracle当前链接进程数：
+select count(*) from v$process；
+ 
+修改Oracle链接进程数：
+alter system set processes = 进程数 scope = spfile； 
+
+修改Oracle SGA：
+alter system set sga_max_size=内存值 scope=spfile；  
+  
+alter system set sga_target=内存值 scope=spfile；
+
+{% endhighlight %}
