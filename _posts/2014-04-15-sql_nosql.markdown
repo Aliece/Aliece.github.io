@@ -707,3 +707,32 @@ alter system set sga_max_size=内存值 scope=spfile；
 alter system set sga_target=内存值 scope=spfile；
 
 {% endhighlight %}
+
+
+假设有个表单products ，里面有id跟name二个栏位，id是主键。 
+
+例1: (明确指定主键，并且有此笔资料，row lock) 
+
+SELECT * FROM products WHERE id='3' FOR UPDATE; 
+
+例2: (明确指定主键，若查无此笔资料，无lock) 
+
+SELECT * FROM products WHERE id='-1' FOR UPDATE; 
+
+例2: (无主键，table lock) 
+
+SELECT * FROM products WHERE name='Mouse' FOR UPDATE; 
+
+例3: (主键不明确，table lock) 
+
+SELECT * FROM products WHERE WHERE id<>'3' FOR UPDATE; 
+
+例4: (主键不明确，table lock) 
+
+SELECT * FROM products WHERE id LIKE '3'  FOR UPDATE; 
+
+注1: FOR UPDATE仅适用于InnoDB，且必须在交易区块(BEGIN/COMMIT)中才能生效。
+ 
+注2: 要测试锁定的状况，可以利用MySQL的Command Mode ，开二个视窗来做测试。
+
+[http://www.cnblogs.com/bigfish--/archive/2012/02/18/2356886.html](http://www.cnblogs.com/bigfish--/archive/2012/02/18/2356886.html)
