@@ -736,3 +736,7 @@ SELECT * FROM products WHERE id LIKE '3'  FOR UPDATE;
 注2: 要测试锁定的状况，可以利用MySQL的Command Mode ，开二个视窗来做测试。
 
 [http://www.cnblogs.com/bigfish--/archive/2012/02/18/2356886.html](http://www.cnblogs.com/bigfish--/archive/2012/02/18/2356886.html)
+
+当然，mysql也有自己的no-sql 而非not-only-sql，HandlerSocket.
+
+[http://www.cnblogs.com/inrie/archive/2011/01/28/1946572.html](http://www.cnblogs.com/inrie/archive/2011/01/28/1946572.html)

@@ -1,0 +1,9 @@
+---
+title: Golang Erlang!
+first: 
+layout: default
+author:
+  name: Aliece TT
+  url: http://aliecett.wicp.net
+---
+
