@@ -272,3 +272,11 @@ static Node nthToLast(Node head, int n) {
 {% endhighlight %}
 
 大致的思想就是先p1遍历到正数第N个位置，然后于p2一起遍历到结尾，那么此时P2处的位置便是倒数第N位置。还有一种思维就是计算Node总的长度m，那么倒数第N个位置就是m-n+1。
+
+##六、try-catch-finally
+
+<p><img src="/assets/images/try-finally.jpg"></p>
+
+<p><img src="/assets/images/try-finally-1.jpg"></p>
+
+执行结果是4 4说明finally优先于return执行
