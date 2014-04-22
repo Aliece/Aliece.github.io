@@ -104,3 +104,39 @@ System.out.println(str1==str2); //false
 
 (4)由于String类的immutable性质，当String变量需要经常变换其值时，应该考虑使用StringBuffer类，以提高程序效率。
 
+java-7下final的优化
+
+public static void main(String[] args) {
+	final String a = "abc";
+	final String b = "a"+"b"+"c";
+	final String c = "c";
+	String cc = "c";
+	final String d = "a" + "b" + c;
+	final String e = "a" + "b" + cc;
+	final String f = d.intern();
+	final String g = e.intern();
+	String h = e.intern();
+	String i = new StringBuilder(a).toString();
+	String j = new String(a);
+	String k = j.intern();
+	
+	System.out.println(a == b);
+	System.out.println(a == d);
+	System.out.println(a == e);
+	System.out.println(c == cc);
+	System.out.println(a == f);
+	System.out.println(a == g);
+	System.out.println(a == h);
+	System.out.println(a == i);
+	System.out.println(j == k);
+}
+
+true
+true
+false
+true
+true
+true
+true
+false
+false
