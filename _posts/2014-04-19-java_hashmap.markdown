@@ -1,6 +1,6 @@
 ---
 title: HasMap!
-first: 
+first: HashMap是基于哈希表的Map接口的非同步实现。此实现提供所有可选的映射操作，并允许使用null值和null键。此类不保证映射的顺序，特别是它不保证该顺序恒久不变。
 layout: default
 author:
   name: Aliece TT
@@ -158,6 +158,8 @@ V get(Object key, int hash) {
     } finally {
         unlock();
     }
-}        
+}
+
+[http://ifeve.com/java-concurrent-hashmap-1/](http://ifeve.com/java-concurrent-hashmap-1/)
 
 [http://zhangshixi.iteye.com/blog/672697](http://zhangshixi.iteye.com/blog/672697)

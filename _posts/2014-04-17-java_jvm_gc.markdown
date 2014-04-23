@@ -1,6 +1,6 @@
 ---
 title: JVM GC!
-first: 
+first: JVM中的内存分配包括PC Register(PC寄存器)  JVM栈 堆（Heap） 方法区域（MethodArea）运行时常量池（RuntimeConstant Pool） 本地方法堆栈（NativeMethod Stacks），这几部分区域但是从程序员的角度来看我们只关注JVM Heap和JVM Stack，因为这两部分是直接关系程序运行期间的内存状态，所以我会主要介绍这两部分内存，其他的我只是给出了简单的一些概念性解释：
 layout: default
 author:
   name: Aliece TT

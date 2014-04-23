@@ -740,3 +740,7 @@ SELECT * FROM products WHERE id LIKE '3'  FOR UPDATE;
 当然，mysql也有自己的no-sql 而非not-only-sql，HandlerSocket.
 
 [http://www.cnblogs.com/inrie/archive/2011/01/28/1946572.html](http://www.cnblogs.com/inrie/archive/2011/01/28/1946572.html)
+
+mysql 索引原理
+
+[http://ourmysql.com/archives/1171/comment-page-1](http://ourmysql.com/archives/1171/comment-page-1)
