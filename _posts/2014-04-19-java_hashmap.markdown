@@ -62,8 +62,11 @@ public V put(K key, V value) {
     addEntry(hash, key, value, i);
     return null;
 }
+{% endhighlight %}
 
 从上面的源代码中可以看出：当我们往HashMap中put元素的时候，先根据key的hashCode重新计算hash值，根据hash值得到这个元素在数组中的位置（即下标），如果数组该位置上已经存放有其他元素了，那么在这个位置上的元素将以链表的形式存放，新加入的放在链头，最先加入的放在链尾。如果数组该位置上没有元素，就直接将该元素放到此数组中的该位置上。
+
+{% highlight ruby %}
 
 void addEntry(int hash, K key, V value, int bucketIndex) {
     // 获取指定 bucketIndex 索引处的 Entry 
@@ -76,6 +79,8 @@ void addEntry(int hash, K key, V value, int bucketIndex) {
         resize(2 * table.length);
 }
 
+{% endhighlight %}
+
 当系统决定存储HashMap中的key-value对时，完全没有考虑Entry中的value，仅仅只是根据key来计算并决定每个Entry的存储位置。我们完全可以把 Map 集合中的 value 当成 key 的附属，当系统决定了 key 的存储位置之后，value 随之保存在那里即可。
 
 HashMap的resize（rehash）：
@@ -83,6 +88,8 @@ HashMap的resize（rehash）：
 当HashMap中的元素越来越多的时候，hash冲突的几率也就越来越高，因为数组的长度是固定的。所以为了提高查询的效率，就要对HashMap的数组进行扩容，数组扩容这个操作也会出现在ArrayList中，这是一个常用的操作，而在HashMap数组扩容之后，最消耗性能的点就出现了：原数组中的数据必须重新计算其在新数组中的位置，并放进去，这就是resize。那么HashMap什么时候进行扩容呢？当HashMap中的元素个数超过数组大小*loadFactor时，就会进行数组扩容，loadFactor的默认值为0.75，这是一个折中的取值。也就是说，默认情况下，数组大小为16，那么当HashMap中元素个数超过16*0.75=12的时候，就把数组的大小扩展为 2*16=32，即扩大一倍，然后重新计算每个元素在数组中的位置，而这是一个非常消耗性能的操作，所以如果我们已经预知HashMap中元素的个数，那么预设元素的个数能够有效的提高HashMap的性能。
 
 key为null:
+
+{% highlight ruby %}
 
 if (key == null)
 	return putForNullKey(value);
@@ -101,7 +108,11 @@ private V putForNullKey(V value) {
 	return null;
 }
 
+{% endhighlight %}
+
 可以看到，前面那个for循环，是在talbe[0]链表中查找key为null的元素，如果找到，则将value重新赋值给这个元素的value，并返回原来的value。如果上面for循环没找到。则将这个元素添加到talbe[0]链表的表头。 
+
+{% highlight ruby %}
 
 public V get(Object key) {
 	if (key == null)
