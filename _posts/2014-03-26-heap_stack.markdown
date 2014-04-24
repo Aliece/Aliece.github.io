@@ -106,6 +106,8 @@ System.out.println(str1==str2); //false
 
 java-7下final的优化
 
+{% highlight ruby %}
+
 public static void main(String[] args) {
 	final String a = "abc";
 	final String b = "a"+"b"+"c";

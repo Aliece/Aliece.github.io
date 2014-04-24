@@ -38,4 +38,72 @@ R树：一颗不一样的B树 :
     另外B树也好B+树也好，根或者上面几层因为被反复query，所以这几块基本都在内存中，不会出现读磁盘IO，一般已启动的时候，就会主动换入内存。”非常感谢。
     Bucket Li："mysql 底层存储是用B+树实现的，知道为什么么。内存中B+树是没有优势的，但是一到磁盘，B+树的威力就出来了"
     
+ 简单的树的实现
+
+{% highlight ruby %}    
+    
+public class TreeTest {
+	
+	static class Node {
+		Node left;
+		Node right;
+		int data;
+		
+		public Node (int data) {
+			this.data = data;
+		}
+		
+	}
+	
+	public static Node arrayToTree(int[] data, int first, int last) {
+		if(first > last) {
+			return null;
+		} else {
+			int middle = (first + last)/2;
+			int mid = data[middle];
+			Node root = new Node(mid);
+			root.left = arrayToTree(data, first, middle -1);
+			root.right = arrayToTree(data, middle+1, last);
+			
+			return root;
+		}
+	}
+	
+	public static void printMidTree(Node root) {//中序遍历--根节点在中间
+		if(root == null) {
+			return;
+		}
+		printMidTree(root.left);
+		System.out.println(root.data);
+		printMidTree(root.right);
+	}
+	
+	public static void printBakTree(Node root) {//后序遍历--根节点在最后
+		if(root == null) {
+			return;
+		}
+		printBakTree(root.left);
+		printBakTree(root.right);
+		System.out.println(root.data);
+	}
+	
+	public static void printFrontTree(Node root) {//前序遍历--根节点在最前
+		if(root == null) {
+			return;
+		}
+		System.out.println(root.data);
+		printFrontTree(root.left);
+		printFrontTree(root.right);
+	}
+	
+	public static void main(String[] args) {
+		int[] data = {1,2,3,6,7,8,99,232,3434};
+		
+		printFrontTree(arrayToTree(data, 0, 8));
+	}
+
+}
+   
+{% endhighlight %}
+ 
 [http://blog.csdn.net/v_JULY_v/article/details/6530142](http://blog.csdn.net/v_JULY_v/article/details/6530142)

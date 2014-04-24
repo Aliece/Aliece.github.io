@@ -1,0 +1,134 @@
+---
+title: Primes!
+first: 
+layout: default
+author:
+  name: Aliece TT
+  url: http://aliecett.wicp.net
+---
+
+{% highlight ruby %}
+
+public class Prime {
+	public static void main(String[] args) {
+		
+		int numCount = 100000000;
+		// int numCount = 100000;
+		long start = System.currentTimeMillis();
+		// getAllPrime(numCount);
+		long end = System.currentTimeMillis();
+		System.out.println((end - start) / 1000.0);
+		start = System.currentTimeMillis();
+		System.out.println(getAllPrimeEfficient(numCount));
+		end = System.currentTimeMillis();
+		System.out.println((end - start) / 1000.0);
+	}
+
+	/**
+	 * 判断给定的数是否是素数
+	 * 
+	 * @param n
+	 * @return
+	 */
+	private static boolean isPrime(int n) {
+		if (0 >= n) {
+			throw new IllegalArgumentException("数字小于0");
+		}
+		if (1 == n) {
+			return false;
+		}
+		if (2 == n) {
+			return true;
+		}
+		for (int i = 2; i < Math.sqrt(n) + 1; i++) {
+			if (0 == n % i) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * 返回包含小于给定数的所有素数的链表
+	 * 
+	 * @param n
+	 * @return
+	 */
+	private static List<Integer> getAllPrime(int n) {
+		List<Integer> primes = new ArrayList<Integer>((int) Math.sqrt(n));
+		for (int i = 1; i <= n; i++) {
+			if (isPrime(i)) {
+				primes.add(i);
+			}
+		}
+		return primes;
+	}
+
+	/**
+	 * 返回包含小于给定数的所有素数的链表(使用筛选法)
+	 * 
+	 * @param n
+	 * @return
+	 */
+	private static int getAllPrimeEfficients(int n)
+	// private static List<Integer> getAllPrimeEfficient(int n)
+	{
+		// List<Integer> primes = new ArrayList<Integer>((int)Math.sqrt(n));
+		int count = 0;
+		int[] nums = new int[n + 1];
+		for (int i = 0; i <= n; i++) {
+			nums[i] = 1;
+		}
+		nums[0] = 0;
+		nums[1] = 0;
+		for (int i = 2; i <= Math.sqrt(n); i++) {
+			if (0 == nums[i]) {
+				continue;
+			} else {
+				for (int j = i;; j++) {
+					int index = j * i;
+					if (index > n) {
+						break;
+					}
+					nums[index] = 0;
+				}
+			}
+		}
+		for (int num : nums) {
+			if (0 != num) {
+				count++;
+				// primes.add(num);
+			}
+		}
+		// return primes;
+		return count;
+	}
+
+	private static int getAllPrimeEfficient(int n) {
+		int count = 0;
+		BitSet numss = new BitSet(n);
+		numss.set(0, true);
+		numss.set(1, true);
+		for (int i = 2; i <= Math.sqrt(n); i++) {
+			if (numss.get(i)) {
+				continue;
+			} else {
+				for (int j = i;; j++) {
+					int index = j * i;
+					if (index > n) {
+						break;
+					}
+					numss.set(index, true);
+				}
+			}
+		}
+		for (int i = 0; i <= n; i++) {
+			if (!numss.get(i)) {
+				count++;
+			}
+		}
+		return count;
+	}
+}
+
+{% endhighlight %}

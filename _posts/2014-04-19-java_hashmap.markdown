@@ -13,6 +13,8 @@ HashMap是基于哈希表的Map接口的非同步实现。此实现提供所有�
 
 HashMap底层就是一个数组结构，数组中的每一项又是一个链表。当新建一个HashMap的时候，就会初始化一个数组。
 
+{% highlight ruby %}
+
 /**
  * The table, resized as necessary. Length MUST Always be a power of two.
  */
@@ -26,10 +28,14 @@ static class Entry<K,V> implements Map.Entry<K,V> {
     ……
 }
 
+{% endhighlight %}
+
 Entry就是数组中的元素，每个 Map.Entry 其实就是一个key-value对，它持有一个指向下一个元素的引用，这就构成了链表。
 
 
 hashmap的存储：
+
+{% highlight ruby %}
 
 public V put(K key, V value) {
     // HashMap允许存放null键和null值。
@@ -108,6 +114,7 @@ public V get(Object key) {
 	}
 	return null;
 }
+{% endhighlight %}
 
 前面两行是找key为null的元素，前面说过，key为null的元素，是放在table[0]这个链表的。所以要找的话，直接到table[0]中查找就行了。如果没找到的话。则根据key的hash值找到元素所在table中下标索引，根据其在找到元素所在链表，在遍历链表，找到该元素并返回其value，否则返回null。
 
@@ -135,6 +142,8 @@ ConcurrentHashMap中主要实体类就是三个：ConcurrentHashMap（整个Hash
     
 get方法（请注意，这里分析的方法都是针对桶的，因为ConcurrentHashMap的最大改进就是将粒度细化到了桶上），首先判断了当前桶的数据个数是否为0，为0自然不可能get到什么，只有返回null，这样做避免了不必要的搜索，也用最小的代价避免出错。然后得到头节点（方法将在下面涉及）之后就是根据hash和key逐个判断是否是指定的值，如果是并且值非空就说明找到了，直接返回；程序非常简单，但有一个令人困惑的地方，这句return readValueUnderLock(e)到底是用来干什么的呢？研究它的代码，在锁定之后返回一个值。但这里已经有一句V v = e.value得到了节点的值，这句return readValueUnderLock(e)是否多此一举？事实上，这里完全是为了并发考虑的，这里当v为空时，可能是一个线程正在改变节点，而之前的get操作都未进行锁定，根据bernstein条件，读后写或写后读都会引起数据的不一致，所以这里要对这个e重新上锁再读一遍，以保证得到的是正确值，这里不得不佩服Doug Lee思维的严密性。整个get操作只有很少的情况会锁定，相对于之前的Hashtable，并发是不可避免的啊！
 
+{% highlight ruby %}
+
 V get(Object key, int hash) {
     if (count != 0) { // read-volatile
         HashEntry e = getFirst(hash);
@@ -159,6 +168,8 @@ V get(Object key, int hash) {
         unlock();
     }
 }
+
+{% endhighlight %}
 
 [http://ifeve.com/java-concurrent-hashmap-1/](http://ifeve.com/java-concurrent-hashmap-1/)
 
