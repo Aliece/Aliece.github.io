@@ -7,8 +7,6 @@ author:
   url: http://aliecett.wicp.net
 ---
 
-{% highlight ruby %}
-
 public class Prime {
 
 	public static void main(String[] args) {
@@ -113,5 +111,3 @@ public class Prime {
 		return count;
 	}
 }
-
-{% endhighlight %}
