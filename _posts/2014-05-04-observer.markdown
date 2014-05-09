@@ -1,0 +1,20 @@
+---
+title: Observer!
+first: JAVA的事件机制其实就是观察者模式的实现，学会了观察者模式，事件机制自己无师自通
+layout: default
+author:
+  name: Aliece TT
+  url: http://aliecett.wicp.net
+---
+
+JAVA的事件机制其实就是观察者模式的实现，学会了观察者模式，事件机制自己无师自通：
+
+下面是观察者模式的类图:
+
+<img src="/assets/images/DesignPatterns/observer.png"></img>
+
+[http://www.iteye.com/topic/1124605](http://www.iteye.com/topic/1124605)
+
+JDK中的设计模式
+
+[http://www.linuxeden.com/html/news/20140310/149299.html](http://www.linuxeden.com/html/news/20140310/149299.html)
