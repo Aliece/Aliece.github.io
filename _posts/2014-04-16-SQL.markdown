@@ -62,3 +62,9 @@ Hash 索引结构的特殊性，其检索效率非常高，索引的检索可以
 MYSQL索引[http://www.cnblogs.com/hustcat/archive/2009/10/28/1591648.html](http://www.cnblogs.com/hustcat/archive/2009/10/28/1591648.html)
 
 Oracle组合索引[http://www.cnblogs.com/rootq/archive/2008/10/19/1314669.html](http://www.cnblogs.com/rootq/archive/2008/10/19/1314669.html)
+
+PreparedStatement: 数据库会对sql语句进行预编译，下次执行相同的sql语句时，数据库端不会再进行预编译了，而直接用数据库的缓冲区，提高数据访问的效率（但尽量采用使用？号的方式传递参数），如果sql语句只执行一次，以后不再复用。
+
+从安全性上来看，PreparedStatement是通过?来传递参数的，避免了拼sql而出现sql注入的问题，所以安全性较好。
+
+在开发中，推荐使用 PreparedStatement

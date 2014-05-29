@@ -17,15 +17,14 @@ select corp_code, corp_corp from tb_Z_Corp where corp_code like '0008%';
 
 优化前:
 
-select corp_code, corp_corp from tb_Z_Corp where corp_code like '0008%';  
+select corp_code, corp_corp from tb_Z_Corp where corp_code like '0008%';
 
-select corp_code, corp_corp from tb_Z_Corp where corp_corp like '江%';  
+select corp_code, corp_corp from tb_Z_Corp where corp_corp like '江%';
 
 优化后：
 
-select corp_code, corp_corp from tb_Z_Corp where corp_code >= '0008' and corp_code < '0009'; 
+select corp_code, corp_corp from tb_Z_Corp where corp_code >= '0008' and corp_code < '0009';
 
 select corp_code, corp_corp from tb_Z_Corp where corp_corp >= '江' and corp_corp < CONCAT('江', x'EFBFBF');
-
 
 [http://blog.csdn.net/firstboy0513/article/details/6912632](http://blog.csdn.net/firstboy0513/article/details/6912632)
