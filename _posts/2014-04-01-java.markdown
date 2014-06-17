@@ -142,6 +142,18 @@ public class Singleton
         return SingletonHolder.instance;    
     }    
 }  
+
+使用枚举实现
+
+public enum Singleton4{
+	INSTANCE{
+		public void doSomething(){
+			……
+		}
+	};
+	public abstract void doSomething();  
+}
+
 {% endhighlight %}
 
 单例模式不一定是单例，可以通过自定义Classloader去加载这个实例 clone和反射也可以产生不同的实例对象。
