@@ -24,3 +24,5 @@ author:
 7根据不同的错误情况，显示相应的错误提醒。
 
 [http://wenku.baidu.com/link?url=_uIiKYbe-nsD0jd3cILMYTg2Iov3yuDyRsIYoftgUHyppE-tyJT3-RPUg_3FwqGX6uRv6x16f_0IY9hIAokafzeQF108TNMDBh6H7K8Ea1a](http://wenku.baidu.com/link?url=_uIiKYbe-nsD0jd3cILMYTg2Iov3yuDyRsIYoftgUHyppE-tyJT3-RPUg_3FwqGX6uRv6x16f_0IY9hIAokafzeQF108TNMDBh6H7K8Ea1a)
+
+[http://blog.csdn.net/kobejayandy/article/details/8685404](http://blog.csdn.net/kobejayandy/article/details/8685404)

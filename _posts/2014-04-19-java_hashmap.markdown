@@ -185,3 +185,5 @@ V get(Object key, int hash) {
 [http://ifeve.com/java-concurrent-hashmap-1/](http://ifeve.com/java-concurrent-hashmap-1/)
 
 [http://zhangshixi.iteye.com/blog/672697](http://zhangshixi.iteye.com/blog/672697)
+
+[http://greemranqq.iteye.com/blog/2038570](http://greemranqq.iteye.com/blog/2038570)
