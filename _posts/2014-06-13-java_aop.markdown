@@ -19,6 +19,14 @@ cglib用于AOP，jdk中的proxy必须基于接口，cglib却没有这个限制�
 
 [http://www.blogjava.net/stone2083/archive/2008/03/16/186615.html](http://www.blogjava.net/stone2083/archive/2008/03/16/186615.html)
 
+##ASM
+
+Java byteCode
+
+类似于直接操作java的字节码，可以通过代码动态生成class
+
+[http://www.iteye.com/topic/98178](http://www.iteye.com/topic/98178)
+
 ##Spring AOP
 
 详情请看
