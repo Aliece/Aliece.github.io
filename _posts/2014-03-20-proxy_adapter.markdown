@@ -11,6 +11,9 @@ author:
 
 这期间我们需要用到DynamicProxy，所以顺便把设计模式中的Proxy回顾一下：
 
+cglib 使用asm生成字节码 速度没有jdk的Javassist快 但是asm和javassist一样生成class估计jdk快
+但是cglib生成的对象执行速度比jdk快
+
 ##代理模式Proxy
 
 首先看一张图：
