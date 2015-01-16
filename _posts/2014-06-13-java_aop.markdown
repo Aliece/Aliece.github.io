@@ -7,6 +7,8 @@ author:
   url: http://aliecett.wicp.net
 ---
 
+Client->Server->service->contolllor->request->requestType->invoke service->dao->databse->aop->excutesql
+
 ##CGlib
 
 CGlib概述：
