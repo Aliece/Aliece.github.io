@@ -1,0 +1,321 @@
+---
+title: java mail!
+first:  java邮件发送
+layout: default
+author:
+  name: Aliece TT
+  url: http://aliecett.wicp.net
+---
+
+{% highlight ruby %}
+
+public class MailMessengerService extends Authenticator implements Runnable
+{
+
+    private Queue<MimeMessage> mailSpool = new ConcurrentLinkedQueue<MimeMessage> ();
+    private Session smtpSession;
+
+    private String smtpHost = "127.0.0.1";
+    private PasswordAuthentication authenticationToken;
+    private boolean ssl = false;
+
+    private int messagesSent = 0;
+    private int messagesFailed = 0;
+
+    private boolean shutdownRequested = false;
+
+
+    public MailMessengerService ( final String smtpServer )
+    {
+        this ( smtpServer, null, null, false );
+    }
+
+    public MailMessengerService ( final String smtpServer, final String smtpLogin,
+                                  final String smtpPassword, boolean ssl )
+    {
+        this.smtpHost = smtpServer;
+        this.ssl = ssl;
+
+        if ( smtpLogin != null && smtpPassword != null )
+        {
+            authenticationToken = new PasswordAuthentication ( smtpLogin, smtpPassword );
+        }
+
+        initSmtpSession ();
+
+        new Thread ( this, "Cybersystem mail messenger service" ).start ();
+    }
+
+    private void initSmtpSession ()
+    {
+        Properties prop = new Properties ();
+        prop.setProperty ( "mail.smtp.host", this.smtpHost );
+        prop.setProperty ( "mail.transport.protocol", "smtp" );
+
+        if ( authenticationToken != null )
+        {
+            prop.setProperty ( "mail.smtp.user", authenticationToken.getUserName () );
+            prop.setProperty ( "mail.smtp.auth", "true" );
+
+            if ( this.ssl )
+            {
+                System.getSecurityManager ();
+                Security.addProvider ( new com.sun.net.ssl.internal.ssl.Provider () );
+                prop.put ( "mail.smtp.port", "465" );
+                prop.put ( "mail.smtp.starttls.enable", "true" );
+                prop.put ( "mail.smtp.socketFactory.port", "465" );
+                prop.put ( "mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory" );
+                prop.put ( "mail.smtp.socketFactory.fallback", "false" );
+            }
+
+            smtpSession = Session.getInstance ( prop, this );
+
+        }
+        else
+        {
+            smtpSession = Session.getInstance ( prop, null );
+        }
+    }
+
+    public void shutdown ()
+    {
+        shutdownRequested = true;
+
+        synchronized ( this )
+        {
+            notifyAll ();
+        }
+    }
+
+    @Override
+    protected PasswordAuthentication getPasswordAuthentication ()
+    {
+        return authenticationToken;
+    }
+
+    public void run ()
+    {
+        while ( !shutdownRequested )
+        {
+            while ( mailSpool.peek () != null )
+            {
+                deliverMessage ( mailSpool.poll () );
+            }
+
+            synchronized ( this )
+            {
+                try
+                {
+                    wait ();
+                }
+                catch ( InterruptedException e )
+                {
+                    //ignored
+                }
+            }
+        }
+    }
+
+    private void deliverMessage ( MimeMessage message )
+    {
+        try
+        {
+            Transport smtp = smtpSession.getTransport ();
+            smtp.connect ();
+            smtp.sendMessage ( message, message.getAllRecipients () );
+            smtp.close ();
+            messagesSent++;
+        }
+        catch ( NoSuchProviderException e )
+        {
+            messagesFailed++;
+            e.printStackTrace ();
+        }
+        catch ( MessagingException e )
+        {
+            messagesFailed++;
+            e.printStackTrace ();
+        }
+        catch ( Throwable err )
+        {
+            messagesFailed++;
+            err.printStackTrace ();
+        }
+    }
+
+    public void sendMessage ( String from, String to, String subject, String text )
+            throws MessagingException
+    {
+        MimeMessage message = new MimeMessage ( smtpSession );
+
+        Address fromAddr = new InternetAddress ( from );
+
+        message.setFrom ( fromAddr );
+        message.setSender ( fromAddr );
+        message.setReplyTo ( new Address[]{ fromAddr } );
+        message.setRecipient ( Message.RecipientType.TO, new InternetAddress ( to ) );
+        message.setSentDate ( new Date () );
+
+        try
+        {
+            message.setHeader ( "Subject", MimeUtility.encodeText ( subject, "utf-8", null ) );
+        }
+        catch ( UnsupportedEncodingException e )
+        {
+            throw new MessagingException ( e.getMessage (), e );
+        }
+
+        message.setHeader ( "content-type", "text/plain" );
+        message.setHeader ( "encoding", "utf-8" );
+        message.setText ( text, "utf-8" );
+
+        sendMessage ( message );
+    }
+
+    public void sendMessage ( MimeMessage message )
+    {
+        mailSpool.add ( message );
+
+        synchronized ( this )
+        {
+            notifyAll ();
+        }
+    }
+
+    public int getMessagesSent ()
+    {
+        return messagesSent;
+    }
+
+    public int getMessagesFailed ()
+    {
+        return messagesFailed;
+    }
+}
+
+{% endhighlight %}
+
+{% highlight ruby %}
+
+ public final class Mailer implements IMailer {
+      private Logger _logger = LoggerFactory.getLogger(this.getClass());
+      private Queue<Message> _queue = new ConcurrentLinkedQueue<Message>();
+      private Session session = null;
+      private String smtpHost = null;
+      private String smtpPort = "0";
+      private InternetAddress _fromRecipient = null;
+      private ScheduledExecutorService _executor = null;
+      
+      public Mailer(ScheduledExecutorService executor_) throws IllegalArgumentException, AddressException {
+          _executor = executor_;
+  
+          _executor.scheduleWithFixedDelay(getMonitor(),
+                  5000, 5000, TimeUnit.MILLISECONDS);
+      }
+      protected Runnable getMonitor() {
+          return new Runnable() {
+              @Override
+              public void run() {
+                  try {
+                      while (true) {
+                          // will stop when the queue is empty.
+                          Message message = getMessage();
+                          if (message == null)
+                              break;
+  
+                          String adrs = "";
+                          for (Address adr : message.getRecipients(RecipientType.TO)) {
+                              adrs += adr.toString() +";";
+                          }
+                          _logger.info("sending mail to {}, subject={}", adrs, message.getSubject());
+                          // Send our mail message
+                          Transport.send(message);
+                      }
+                  } catch (Exception e) {
+                     _logger.error("Failed", e);
+                  }
+              }
+          };
+      }
+      @Override
+      public void sendMail(String to, String subject, String content, String fromRecipient) {
+          sendMail(Collections.singletonList(to), subject, content, fromRecipient);
+      }
+      
+      @Override
+      public void sendMail(List<String> to, String subject, String content, String fromRecipient) {
+          try {
+              if (session == null) {
+                  //TODO factory
+                  Properties props = new Properties();
+                  props.setProperty("mail.smtp.host", smtpHost);
+                  props.setProperty("mail.smtp.port", smtpPort);
+  
+                  /*TODO
+                  if (session != null)
+                      session.close();
+         */
+                 session = Session.getDefaultInstance(props);
+             }
+             if (StringUtil.isEmpty(smtpHost)) {
+                 throw new IllegalArgumentException("smtp host not set!");
+             }
+             if (StringUtil.isEmpty(smtpPort)) {
+                 throw new IllegalArgumentException("smtp port not set!");
+             }
+             if (StringUtil.isEmpty(fromRecipient) && _fromRecipient == null) {
+                 throw new IllegalArgumentException("Missing from recipient arg!");
+             }
+ 
+             InternetAddress ia = _fromRecipient;
+            if (fromRecipient != null)
+                 ia = new InternetAddress(fromRecipient);
+ 
+             // Prepare our mail message
+             Message message = new MimeMessage(session);
+            message.setFrom(ia);
+ 
+            InternetAddress dests[] = new InternetAddress[to.size()];
+             int i = 0;
+             for (String tt : to) {
+                 dests[i++] = new InternetAddress(tt);
+            }
+ 
+            message.setRecipients(Message.RecipientType.TO, dests);
+             message.setSubject(subject);
+             message.setContent(content, "text/plain; charset=UTF-8");
+ 
+             _logger.info("queued mail to {}, subject={}", to.toString(), subject);
+             _queue.add(message);
+         } catch (Exception e) {
+             _logger.error("Failed", e);
+         }
+     }
+ 
+     @Override
+     public Message getMessage() {
+         return _queue.poll();
+     }
+    public String getSmtpHost() {
+        return smtpHost;
+     }
+     public String getSmtpPort() {
+        return smtpPort;
+     }
+     public String getFromRecipient() {
+         if (_fromRecipient != null)
+             return _fromRecipient.getAddress();
+         return null;
+     }
+     public void setFromRecipient(String fromRecipient_) throws AddressException {
+         _fromRecipient = new InternetAddress(fromRecipient_);
+     }
+     public void setSmtpHost(String smtpHost) {
+         this.smtpHost = smtpHost;
+     }
+     public void setSmtpPort(String smtpPort) {
+         this.smtpPort = smtpPort;
+     }
+ }
+
+{% endhighlight %}
