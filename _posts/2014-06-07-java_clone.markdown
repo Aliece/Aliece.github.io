@@ -14,3 +14,66 @@ author:
 继承自java.lang.Object类的clone()方法是浅复制。
 
 序列化对象然后反序列化出来的对象时深度克隆。
+
+
+public class CglibBeanCopy extends CglibBeanCopyMBeanSupport implements BeanCopy, CglibBeanCopyMBean {
+
+    private final BeanCopierCache beanCopierCache;
+
+    public CglibBeanCopy() {
+        this( true );
+    }
+
+    public CglibBeanCopy(boolean usingJmxMonitor) {
+        super( usingJmxMonitor , "cglib" );
+        this.beanCopierCache = new BeanCopierCache();
+    }
+
+    public CglibBeanCopy(int maxCount , boolean usingJmxMonitor) {
+        super( usingJmxMonitor , "cglib" );
+        this.beanCopierCache = new BeanCopierCache(maxCount );
+    }
+
+    public CglibBeanCopy(MemoryCache<BeanCopier> beanCopiers , boolean usingJmxMonitor) {
+        super( usingJmxMonitor , "cglib" );
+        this.beanCopierCache = new BeanCopierCache( beanCopiers );
+    }
+
+    @Override
+    protected boolean doCopy(Object source, Object target, BeanCopyConverter beanCopyConverter) {
+        BeanCopier beanCopier = createBeanCopier( source , target , beanCopyConverter );
+        Converter converter = createConverter( beanCopyConverter );
+        beanCopier.copy( source , target , converter );
+        return beanCopierCache.isFirstCreation();
+    }
+
+    BeanCopierCache getBeanCopierCache() {
+        return beanCopierCache;
+    }
+
+    private Converter createConverter(BeanCopyConverter beanCopyConverter) {
+        if ( beanCopyConverter == null ) {
+            return null;
+        }
+        return new BeanConverter( beanCopyConverter );
+    }
+
+    private BeanCopier createBeanCopier( Object source, Object target, BeanCopyConverter beanCopyConverter ) {
+        return beanCopierCache.createBeanCopier( source , target , source.getClass(), target.getClass(), beanCopyConverter != null );
+    }
+
+    private static final class BeanConverter implements Converter {
+
+        private final BeanCopyConverter beanCopyConverter;
+
+        public BeanConverter(BeanCopyConverter beanCopyConverter) {
+            this.beanCopyConverter = beanCopyConverter;
+        }
+
+        @Override
+        @SuppressWarnings("rawtypes")
+        public Object convert(Object value, Class target, Object context) {
+            return beanCopyConverter.convert( value , target );
+        }
+    }
+}
